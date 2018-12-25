@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <!DOCTYPE mapper
+     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.clouddisk.mapper.UserMapper">
+	<select id="checkUser" parameterType="cn.clouddisk.entity.User"
+		resultType="java.lang.String">
+		SELECT user.userName FROM user WHERE userName=#{userName} AND
+		passWord=#{passWord}
+	</select>
+
+	<select id="findUser" parameterType="java.lang.String"
+		resultType="java.lang.Integer">
+		SELECT user.id FROM user WHERE userName=#{userName}
+	</select>
+
+	<select id="isVip" parameterType="java.lang.String"
+		resultType="int">
+		SELECT isVip FROM user WHERE userName=#{value}
+	</select>
+
+	<insert id="createUser" parameterType="cn.clouddisk.entity.User">
+		<selectKey keyProperty="id" order="AFTER"
+			resultType="java.lang.Integer">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		INSERT INTO user(userName,passWord,email,nickName,isVip)
+		VALUES(#{userName},#{passWord},#{email},#{nickName},#{isVip})
+	</insert>
+
+</mapper>
