@@ -23,7 +23,7 @@ import java.util.Map;
 
 @Controller
 @PropertySource("classpath:settings.properties")
-@RequestMapping("/jsp")
+//@RequestMapping("/jsp")
 public class UserController {
     @Autowired
     UserService userService;
@@ -55,7 +55,7 @@ public class UserController {
                 if (user.getUserName().equals("admin1")) {
                     session.setAttribute("admin", true);
                 }
-                return "redirect:/searchUserFile";
+                return "redirect:/userHome";
             }
             bindingResult.rejectValue("userName", "", "用户名或密码错误");
             return "signin";
@@ -73,7 +73,7 @@ public class UserController {
 
     @RequestMapping("/autoSignIn")
     public String autoSignIn() {
-        return "redirect:/searchUserFile";
+        return "redirect:/userHome";
     }
 
     @RequestMapping("/registPage")

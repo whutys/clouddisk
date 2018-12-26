@@ -12,10 +12,10 @@
     <link rel="stylesheet" href="static/css/bootstrap.css"/>
     <link rel="stylesheet" href="static/css/fileinput.min.css"/>
 
-    <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="static/js/fileinput.min.js"></script>
-    <script type="text/javascript" src="static/js/locales/zh.js"></script>
-    <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="/static/js/locales/zh.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(function () {
             //$("#pagesize").get(0).selectedIndex=${pagebean.pagesize/5-1 };

@@ -10,9 +10,9 @@
 	content="particles.js is a lightweight JavaScript library for creating particles.">
 <meta name="viewport"
 	content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="stylesheet" href="static/css/bootstrap.css" />
-<script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="/static/css/bootstrap.css" />
+<script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
 </head>
 <body>
 
@@ -42,7 +42,7 @@
 				</div>
 				<form:form class="form-horizontal"
 					action="${pageContext.request.contextPath }/admin/signInForm"
-					modelAttribute="user" method="post">
+					modelAttribute="admin" method="post">
 					<div class="form-group">
 						<label class="col-lg-3 control-label"></label>
 						<div class="col-lg-5">
@@ -52,15 +52,15 @@
 					<div class="form-group">
 						<label for="inputUsername" class="col-lg-3 control-label">用户名</label>
 						<div class="col-lg-5">
-							<form:input path="userName" type="text" class="form-control"
-								id="inputUsername" name="userName" placeholder="请输入您的用户名" />
+							<form:input path="adminName" type="text" class="form-control"
+								id="inputUsername" name="adminName" placeholder="请输入您的用户名" />
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="inputPassword" class="col-lg-3 control-label">密码</label>
 						<div class="col-lg-5">
-							<form:input path="passWord" type="password" class="form-control"
-								id="inputPassword" name="passWord" placeholder="请输入您的密码" />
+							<form:input path="adminPassWord" type="password" class="form-control"
+								id="inputPassword" name="adminPassWord" placeholder="请输入您的密码" />
 						</div>
 					</div>
 					<div class="form-group">

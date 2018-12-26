@@ -1,31 +1,35 @@
 package cn.clouddisk.controller;
 
+import cn.clouddisk.entity.Admin;
 import cn.clouddisk.entity.User;
 import cn.clouddisk.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
 @Controller
+@RequestMapping("/admin")
 public class AdminController {
     @Autowired
     AdminService adminService;
 
-    @RequestMapping("/admin")
-    public String logIn(User user) {
+    @RequestMapping("")
+    public String logIn(Admin admin) {
         return "/admin/signIn";
     }
 
-    @RequestMapping("/admin/signInForm")
-    public String signIn(Model model) {
+    @RequestMapping("/signInForm")
+    public String signIn(Admin admin,Model model) {
+        if(!adminService.checkAdmin(admin))return "redirect:/admin";
         List<User> allUsers = adminService.findAllUsers();
         model.addAttribute("users",allUsers);
         return "/admin/users";
     }
-    @RequestMapping("/admin/deleteUser")
+    @RequestMapping("/deleteUser")
     public String deleteUser(int id){
         adminService.deleteUserById(id);
         return "redirect:/admin/signInForm";

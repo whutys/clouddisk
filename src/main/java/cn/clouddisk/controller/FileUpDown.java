@@ -35,7 +35,7 @@ import java.util.UUID;
 public class FileUpDown {
 
     @Value("${storePath}")
-    private String storePath ; // 存储目录 E:\\BaiduYunDownload
+    private String storePath; // 存储目录 E:\\BaiduYunDownload
     private static final long time = System.currentTimeMillis();
     private static final int normallimit = 1000 * 1024 * 1024; // 普通用户上传单个文件的最大体积 1G
     private static final long viplimit = 2000 * 1024 * 1024; // 普通用户上传单个文件的最大体积 2G
@@ -69,14 +69,19 @@ public class FileUpDown {
             map.put("error", "未登录");
         } else if (size == 0) {
             map.put("error", "文件大小不能为0");
-        }
-
-        else {
+        } else {
             if (filetostore.exists()) {
                 int index = fileFileName.lastIndexOf(".");
-                StringBuilder sb = new StringBuilder(fileFileName.substring(0, index));
-                sb.append("_").append(Long.toString((System.currentTimeMillis() - time) >> 3));
-                sb.append(fileFileName.substring(index));
+                StringBuilder sb;
+                String str = Long.toString((System.currentTimeMillis() - time) >> 3);
+                if (index < 0) {
+                    sb = new StringBuilder(fileFileName);
+                    sb.append("_").append(str);
+                } else {
+                    sb = new StringBuilder(fileFileName.substring(0, index));
+                    sb.append("_").append(str);
+                    sb.append(fileFileName.substring(index));
+                }
                 fileFileName = sb.toString();
                 filetostore = new File(storePath + File.separator + user_name, fileFileName);
             }
