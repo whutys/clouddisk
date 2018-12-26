@@ -11,4 +11,5 @@ public class PlayList {
     int id;
     String userName;
     String videoName;
+    String videoAddress;
 }

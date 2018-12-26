@@ -4,6 +4,8 @@ import cn.clouddisk.mapper.PlayListMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class PlayListService {
     @Autowired
@@ -12,10 +14,10 @@ public class PlayListService {
     public void setPlayList(String userName,String videoName){
         playListMapper.setVideoName(userName,videoName);
     }
-    public String findVideoName(String userName){
+    public Map<String,String> findVideoInfo(String userName){
         return  playListMapper.getVideoName(userName);
     }
-    public void changeVideoName(String userName,String videoName){
-        playListMapper.updateVideoName(userName,videoName);
+    public void changeVideoInfo(String userName,String videoName,String videoAddress){
+        playListMapper.updateVideoInfo(userName,videoName,videoAddress);
     }
 }

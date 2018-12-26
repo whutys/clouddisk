@@ -49,7 +49,7 @@
             $("#searchengine")[0].selectedIndex = 0;
             //window.history.back(-1);
             $("#searchbt").click(function () {
-                var searchvalue = $("#searchvalue").val();
+                var searchvalue = $("#searchValue").val();
                 var searchengine = $("#searchengine").val();
                 $(".video-search").html('<iframe id="search-box" style="position: absolute" height="100%" width="100%" src='
                     + searchengine
@@ -74,40 +74,31 @@
                 });
                 $("title").text(htmlobj.responseText);
                 $("#title").text(htmlobj.responseText);
-            })
-        });
-        void function textSelect() {
-            this.select();
-            if (event.keyCode == 13) {
-                window.getElementById("searchbt").click();
+            });
+            document.onkeydown = function (e) {
+                var ev = (typeof event != 'undefined') ? window.event : e;
+                if (ev.keyCode == 13 && document.activeElement.id == "searchValue") {
+                    $("#searchbt").click();
+                } else if (ev.keyCode == 13 && document.activeElement.id == "vipSource") {
+                    $("#vipbt").click();
+                }
             }
-        };
-
+            /*$("#searchValue").keydown(function (event) {
+                if (event.keyCode == 13 && this.act) {
+                    $("#searchbt").click();
+                }
+            });
+            $("#vipSource").keydown(function (event) {
+                if (event.keyCode == 13) {
+                    alert("hh")
+                    $("#vipbt").click();
+                }
+            });*/
+        });
     </script>
 </head>
 <body>
-<%@include file="/head.jsp"%>
-<%--<nav class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target="#example-navbar-collapse">
-            <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
-                class="icon-bar"></span> <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">410云盘</a>
-    </div>
-    <div class="collapse navbar-collapse" id="example-navbar-collapse">
-        <ul class="nav navbar-nav navbar-right">
-            <li><a
-                    href="${pageContext.request.contextPath}/autoSignIn?user_name=${user_name}"><span
-                    class="glyphicon glyphicon-user"></span>我的主页</a></li>
-            <li><a href="${pageContext.request.contextPath}/index.jsp"><span
-                    class="glyphicon glyphicon-home"></span>首页</a></li>
-            <li><a href="${pageContext.request.contextPath}/help.jsp"><span
-                    class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
-        </ul>
-    </div>
-</nav>--%>
+<%@include file="/head.jsp" %>
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-8 col-lg-offset-2">
@@ -118,7 +109,7 @@
                         <option value="${searchengine.value }">${searchengine.key }
                     </c:forEach></select>
                 </span>
-                <input id="searchvalue" type="text" class="form-control" onfocus="textSelect()">
+                <input id="searchValue" type="text" class="form-control" onfocus="this.select()">
                 <span id="searchbt" class="input-group-addon btn">视频搜索</span>
             </div>
             <div class="input-group">
@@ -129,13 +120,14 @@
                     </c:forEach>
                     </select>
                 </div>
-                <input id="vipSource" type="text" class="form-control" onfocus="this.select()"> <span
+                <input id="vipSource" type="text" class="form-control" onfocus="this.select()"
+                       value="${videoInfo.get("videoAddress")}"> <span
                     id="vipbt" class="input-group-addon btn">立即播放</span>
             </div>
         </div>
     </div>
     <br>
-    <h4 id="title">${sessionScope.get("videoName")}</h4>
+    <h4 id="title">${videoInfo.get("videoName")}</h4>
     <div class="row">
         <div class="col-lg-6">
             <div class="video-search"></div>

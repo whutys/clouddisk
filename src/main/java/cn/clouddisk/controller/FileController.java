@@ -116,12 +116,14 @@ public class FileController {
             map.put("types", types);
             list = fileService.getUserFiles(map);
             //播放信息
-            String videoName = playListService.findVideoName(username);
+            Map<String, String> videoInfo = playListService.findVideoInfo(username);
+            String videoName = videoInfo.get("videoName");
             if (videoName == null) {
                 videoName = "无";
                 playListService.setPlayList(username, videoName);
             }
-            request.getSession().setAttribute("videoName", videoName);
+//            request.getSession().setAttribute("videoName", videoName);
+//            request.getSession().setAttribute();
         } catch (Exception e) {
             e.printStackTrace();
             return "redirect:/signInPage";
@@ -179,7 +181,10 @@ public class FileController {
     }
 
     @RequestMapping("/vipPlayer")
-    public String vipAnalysis() {
+    public String vipAnalysis(HttpSession httpSession,Model model) {
+        User user = (User) httpSession.getAttribute("user");
+        Map<String, String> videoInfo = playListService.findVideoInfo(user.getUserName());
+        model.addAttribute("videoInfo",videoInfo);
         return "vip_analysis";
     }
 
@@ -191,8 +196,8 @@ public class FileController {
         if (user != null)
             userName = user.getUserName();
         String videoName = MyUtils.getTitle(url);
-        httpSession.setAttribute("videoName", videoName);
-        playListService.changeVideoName(userName, videoName);
+//        httpSession.setAttribute("videoName", videoName);
+        playListService.changeVideoInfo(userName, videoName,url);
         return videoName;
     }
 }
