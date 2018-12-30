@@ -10,11 +10,11 @@
     <title>VIP播放器</title>
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="static/css/bootstrap.css"/>
-    <link type="text/css" rel="stylesheet" href="static/static/css/video-js.min.css"/>
-    <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="static/js/video.min.js"></script>
+    <link rel="stylesheet" href="/static/css/bootstrap.css"/>
+    <link type="text/css" rel="stylesheet" href="/static/css/video-js.min.css"/>
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/video.min.js"></script>
     <style type="text/css">
         .video-search, .video-area {
             position: relative;
@@ -22,13 +22,18 @@
             background-color: #000000;
             color: #ac2925;
         }
+
+        .div-inline {
+            float: left;
+            display: inline;
+        }
     </style>
     <script>
         videojs.options.flash.swf = "js/video-js.swf";
     </script>
     <%
-        String[] apis = {"http://jiexi.92fz.cn/player/vip.php?url=", "http://www.dgua.xyz/webcloud/?url=",
-                "http://vb.tshu.top/webcloud/?url=", "http://api.hlglwl.com/jx.php?url=",
+        String[] apis = {"http://jiexi.92fz.cn/player/vip.php?url=", "http://jqaaa.com/jx.php?url=",
+                "http://api.bbbbbb.me/jx/?url=", "http://api.hlglwl.com/jx.php?url=",
                 "http://vip.jlsprh.com/index.php?url=", "http://app.baiyug.cn:2019/vip/?url="};
         int n = 0;
         pageContext.setAttribute("apis", apis);
@@ -47,6 +52,9 @@
         $(function () {
             $("#apis")[0].selectedIndex = 0;
             $("#searchengine")[0].selectedIndex = 0;
+
+            var json={};
+            for (var index in json) {};
             //window.history.back(-1);
             $("#searchbt").click(function () {
                 var searchvalue = $("#searchValue").val();
@@ -82,57 +90,75 @@
                 } else if (ev.keyCode == 13 && document.activeElement.id == "vipSource") {
                     $("#vipbt").click();
                 }
-            }
-            /*$("#searchValue").keydown(function (event) {
-                if (event.keyCode == 13 && this.act) {
-                    $("#searchbt").click();
-                }
-            });
-            $("#vipSource").keydown(function (event) {
-                if (event.keyCode == 13) {
-                    alert("hh")
-                    $("#vipbt").click();
-                }
-            });*/
+            };
+
+            $(".col-lg-6 .btn").click(function () {
+                var searchValue = $("#searchValue").val();
+                var searchengine = $("#searchengine").val();
+                var list = '';
+                $.ajax({
+                    type: "get",
+                    url: "${pageContext.request.contextPath}/getVideoItem?url=" + searchengine + encodeURI(encodeURI(searchValue)),
+                    datatype: "json",
+                    async: false,
+                    success: function (data) {
+                        for (var index in data) {
+                            // target='" + data[index] + "'
+                            list += '<div class="col-sm-1 col-xs-1"><a href="javascript:void(0);" onclick=playVideo(\'' + data[index] + '\')>' + index + '</a></div>';
+                        }
+                    }
+                });
+                $(".col-lg-6 .result_list").html(list);
+            })
         });
+
+        function playVideo(url) {
+            $("#vipSource").val(url);
+            $("#vipbt").click();
+        };
     </script>
 </head>
 <body>
 <%@include file="/head.jsp" %>
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2">
-            <div class="input-group">
-                <span class="input-group-btn">
-                    <select id="searchengine" class="btn btn-default dropdown-toggle"><c:forEach
-                            items="${searchengines}" var="searchengine">
-                        <option value="${searchengine.value }">${searchengine.key }
-                    </c:forEach></select>
-                </span>
-                <input id="searchValue" type="text" class="form-control" onfocus="this.select()">
-                <span id="searchbt" class="input-group-addon btn">视频搜索</span>
+    <div class="col-lg-8 col-lg-offset-2">
+        <div class="input-group">
+            <span class="input-group-btn">
+            <select id="searchengine" class="btn btn-default dropdown-toggle"><c:forEach
+                    items="${searchengines}" var="searchengine">
+                <option value="${searchengine.value }">${searchengine.key }
+            </c:forEach>
+            </select>
+            </span>
+            <input id="searchValue" type="text" class="form-control" onfocus="this.select()">
+            <span id="searchbt" class="input-group-addon btn">视频搜索</span>
+        </div>
+    </div>
+    <div class="col-lg-8 col-lg-offset-2">
+        <div class="input-group">
+            <div class="input-group-btn">
+                <select id="apis" class="btn btn-default dropdown-toggle"><c:forEach
+                        items="${apis }" var="api">
+                    <option value="${api }">解析${n=n+1 }</option>
+                </c:forEach>
+                </select>
             </div>
-            <div class="input-group">
-                <div class="input-group-btn">
-                    <select id="apis" class="btn btn-default dropdown-toggle"><c:forEach
-                            items="${apis }" var="api">
-                        <option value="${api }">解析${n=n+1 }</option>
-                    </c:forEach>
-                    </select>
-                </div>
-                <input id="vipSource" type="text" class="form-control" onfocus="this.select()"
-                       value="${videoInfo.get("videoAddress")}"> <span
-                    id="vipbt" class="input-group-addon btn">立即播放</span>
-            </div>
+            <input id="vipSource" type="text" class="form-control" onfocus="this.select()"
+                   value="${videoInfo.get("videoAddress")}"> <span
+                id="vipbt" class="input-group-addon btn">立即播放</span>
         </div>
     </div>
     <br>
-    <h4 id="title">${videoInfo.get("videoName")}</h4>
     <div class="row">
         <div class="col-lg-6">
+            <h4 id="title">${videoInfo.get("videoName")}</h4>
             <div class="video-search"></div>
         </div>
         <div class="col-lg-6">
+            <div class="container-fluid row">
+                <div class="col-sm-2 col-xs-2"><span class="btn">视频列表</span></div>
+                <div class="result_list col-sm-10 col-xs-10"></div>
+            </div>
             <div class="video-area"></div>
         </div>
     </div>

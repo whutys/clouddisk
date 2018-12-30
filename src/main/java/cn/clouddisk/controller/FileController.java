@@ -9,7 +9,6 @@ import cn.clouddisk.service.UserService;
 import cn.clouddisk.utils.MyUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.apache.ibatis.io.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -22,10 +21,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
 import java.net.URLDecoder;
 import java.util.*;
 
@@ -200,4 +196,18 @@ public class FileController {
         playListService.changeVideoInfo(userName, videoName,url);
         return videoName;
     }
+    @ResponseBody
+    @GetMapping("/getVideoItem")
+    public Map<String,String> getVideoItem(HttpSession httpSession, String url) {
+//        User user = (User) httpSession.getAttribute("user");
+//        String userName = null;
+//        if (user != null)
+//            userName = user.getUserName();
+
+        Map<String,String> videoItem = MyUtils.crawlTencentVideo(url);
+//        httpSession.setAttribute("videoName", videoName);
+//        playListService.changeVideoInfo(userName, videoName,url);
+        return videoItem;
+    }
+
 }
