@@ -204,7 +204,7 @@ public class FileController {
 //        if (user != null)
 //            userName = user.getUserName();
 
-        Map<String,String> videoItem = MyUtils.crawlTencentVideo(url);
+        Map<String,String> videoItem = MyUtils.crawlVideo(url);
 //        httpSession.setAttribute("videoName", videoName);
 //        playListService.changeVideoInfo(userName, videoName,url);
         return videoItem;
