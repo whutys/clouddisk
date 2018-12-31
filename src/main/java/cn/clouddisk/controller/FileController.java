@@ -33,12 +33,14 @@ public class FileController {
     private String storePath; // 存储目录 E:\\BaiduYunDownload
     @Value("${category}")
     private String category;
+    private final FileService fileService;
+    private final PlayListService playListService;
+
     @Autowired
-    private UserService userService;
-    @Autowired
-    private FileService fileService;
-    @Autowired
-    private PlayListService playListService;
+    public FileController(FileService fileService, PlayListService playListService) {
+        this.fileService = fileService;
+        this.playListService = playListService;
+    }
 
     @RequestMapping("/deletefile")
     public String deleteFile(HttpServletRequest request, int id) {
@@ -52,11 +54,10 @@ public class FileController {
                 String storepath = storePath + File.separator + login_user + File.separator + filename;
                 System.out.println(storepath);
                 File file = new File(storepath);
-                if (file.exists()) {
-                    file.delete();
+                if (file.exists()&&file.delete()) {
+                    fileService.deleteFileById(id); // 删除数据库的该文件记录
                 }
-                fileService.deleteFileById(id); // 删除数据库的该文件记录
-                return "redirect:/searchUserFile";
+                return "redirect:/userHome";
             } else { // 不通过，可能是人为篡改数据，转发至全局消息页面
                 request.setAttribute("globalmessage", "该文件可能不属于你");
                 return "forward:/message.jsp";
@@ -70,8 +71,7 @@ public class FileController {
     }
 
     @RequestMapping(value = "/userHome")
-    public String searchUserFile(HttpServletRequest request, PageBean pageBean, Model model)
-            throws Exception {
+    public String searchUserFile(HttpServletRequest request, PageBean pageBean, Model model) {
         // 根据用户查找出它所有的文件
         String filepath;// file表的文件路径就是所属的用户的用户名
         List<MyFile> list;
@@ -105,8 +105,7 @@ public class FileController {
                 for (String string : jsonObject.keySet()) {
                     types.addAll(Arrays.asList(jsonObject.get(string).toString().split("/")));
                 }
-            } else if ("all".equals(filetype)) {
-            } else {
+            } else if (!"all".equals(filetype)) {
                 types = new ArrayList<>(Arrays.asList(jsonObject.get(filetype).toString().split("/")));
             }
             map.put("types", types);
@@ -177,10 +176,10 @@ public class FileController {
     }
 
     @RequestMapping("/vipPlayer")
-    public String vipAnalysis(HttpSession httpSession,Model model) {
+    public String vipAnalysis(HttpSession httpSession, Model model) {
         User user = (User) httpSession.getAttribute("user");
         Map<String, String> videoInfo = playListService.findVideoInfo(user.getUserName());
-        model.addAttribute("videoInfo",videoInfo);
+        model.addAttribute("videoInfo", videoInfo);
         return "vip_analysis";
     }
 
@@ -193,21 +192,14 @@ public class FileController {
             userName = user.getUserName();
         String videoName = MyUtils.getTitle(url);
 //        httpSession.setAttribute("videoName", videoName);
-        playListService.changeVideoInfo(userName, videoName,url);
+        playListService.changeVideoInfo(userName, videoName, url);
         return videoName;
     }
+
     @ResponseBody
     @GetMapping("/getVideoItem")
-    public Map<String,String> getVideoItem(HttpSession httpSession, String url) {
-//        User user = (User) httpSession.getAttribute("user");
-//        String userName = null;
-//        if (user != null)
-//            userName = user.getUserName();
-
-        Map<String,String> videoItem = MyUtils.crawlVideo(url);
-//        httpSession.setAttribute("videoName", videoName);
-//        playListService.changeVideoInfo(userName, videoName,url);
-        return videoItem;
+    public Map<String, String> getVideoItem(String url) {
+        return MyUtils.crawlVideo(url);
     }
 
 }

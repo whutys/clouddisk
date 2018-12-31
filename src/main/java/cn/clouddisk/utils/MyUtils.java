@@ -16,12 +16,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MyUtils {
-    public static String cssQuerys = "{\"qq\":\".result_episode_list\",\"iqiyi\":\".result_album\"}";
+    private static String cssQueryS = "{\"qq\":\".result_episode_list\",\"iqiyi\":\".result_album\"}";
 
-    public static JSONObject json = JSON.parseObject(cssQuerys);
+    private static JSONObject json = JSON.parseObject(cssQueryS);
 
     public static String getFileType(String fileName) {
-        return fileName.substring(fileName.lastIndexOf('.'));
+        int beginIndex = fileName.lastIndexOf('.');
+        if (beginIndex<0)return "";
+        return fileName.substring(beginIndex);
     }
 
     public static String getTitle(String url) {
@@ -30,8 +32,7 @@ public class MyUtils {
         }
         try {
             Document document = Jsoup.connect(url).get();
-            String title = document.title();
-            return title;
+            return document.title();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -39,8 +40,8 @@ public class MyUtils {
     }
 
     @Test
-    public void test() {
-        String url = null;
+    void test() {
+        String url;
 //        url = "http://v.qq.com/x/cover/nphyo88qm4m6i6s.html?vid=v0028cwf3bv";
         url = "https://so.iqiyi.com/so/q_时间";
 //        try {

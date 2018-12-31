@@ -141,9 +141,8 @@
                                        varStatus="stat">
                             <tr class="${stat.count%2==0?'success':'warning'}">
                                 <td><a class="btn"
-                                       onclick="openfile('${c.filepath}','${c.filename }')"> <c:set
-                                        var="filetype"
-                                        value="${c.filename.substring(c.filename.lastIndexOf('.')+1,c.filename.length())}"></c:set>
+                                       onclick="openfile('${c.filepath}','${c.filename }')"> <c:set var="filetype"
+                                                                                                    value="${c.filename.substring(c.filename.lastIndexOf('.')+1,c.filename.length())}"></c:set>
                                     <c:choose>
                                         <c:when test="${filetype=='mp4' }">
                                             <span class="glyphicon glyphicon-hd-video"></span>
@@ -186,7 +185,7 @@
                                     </button>
                                 </td>
                                 <td><select class="form-control input-sm" id="${c.id}"
-                                            onchange="gochange(${pagebean.currentpage},${c.id})">
+                                            onchange="change(${pagebean.currentpage},${c.id})">
                                     <c:if test="${c.canshare==0 }">
                                         <option value="0">私有</option>
                                         <option value="1">共享</option>
@@ -239,7 +238,7 @@
         }
     };
 
-    function gochange(currentpage, fileid) {
+    function change(currentpage, fileid) {
 
         var canshare = document.getElementById(fileid).value;
         var pagesize = ${pagebean.pagesize};

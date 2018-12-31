@@ -44,18 +44,20 @@ public class FileUpDown {
     @Autowired
     private FileService fileService;
     @Autowired
-    private UserService userService;
-    @Autowired
     private MyFile myFile;
 
     @ResponseBody
-    @PostMapping(value = "/uploadfile", produces = "text/html;charset=UTF-8")
-    public String upLoad(@RequestParam("file") MultipartFile multipartFile, HttpSession session) {
+    @PostMapping(value = "/uploadfile")
+    public Map<String, Object> upLoad(@RequestParam("file") MultipartFile multipartFile, HttpSession session) {
         String fileFileName = multipartFile.getOriginalFilename();
         String uuid = UUID.randomUUID() + MyUtils.getFileType(fileFileName);
         Map<String, Object> map = new HashMap<>();
         // session域存的username和传进来的username一致，说明用户名没有造假
         User user = (User) session.getAttribute("user");
+        if (user == null) {
+            map.put("error", "未登录");
+            return map;
+        }
         String user_name = user.getUserName();
         int isvip = 0;
         try {
@@ -63,11 +65,11 @@ public class FileUpDown {
         } catch (Exception e1) {
             e1.printStackTrace();
         }
+        File dir=new File(storePath+File.separator+user_name);
+        if (!dir.exists())dir.mkdirs();
         File filetostore = new File(storePath + File.separator + user_name, fileFileName);
         long size = multipartFile.getSize(); // 上传文件的大小
-        if (user == null) {
-            map.put("error", "未登录");
-        } else if (size == 0) {
+        if (size == 0) {
             map.put("error", "文件大小不能为0");
         } else {
             if (filetostore.exists()) {
@@ -115,8 +117,8 @@ public class FileUpDown {
                 }
             }
         }
-        System.out.println(JSONObject.parseObject(JSON.toJSONString(map)));
-        return JSONObject.parseObject(JSON.toJSONString(map)).toJSONString();
+//        System.out.println(JSONObject.parseObject(JSON.toJSONString(map)));
+        return map;//JSONObject.parseObject(JSON.toJSONString(map)).toJSONString();
     }
 
     @RequestMapping("/download")
@@ -135,8 +137,8 @@ public class FileUpDown {
                     "attachment;filename=" + URLEncoder.encode(myFile.getFilename(), "UTF-8"));
 
             in = new FileInputStream(file);
-            int len = 0;
-            byte buffer[] = new byte[1024];
+            int len;
+            byte[] buffer = new byte[1024];
             OutputStream out = response.getOutputStream();
             while ((len = in.read(buffer)) > 0) {
                 out.write(buffer, 0, len);
