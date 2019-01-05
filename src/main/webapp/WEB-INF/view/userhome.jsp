@@ -36,7 +36,7 @@
                 //minImageHeight: 50,//图片的最小高度
                 //maxImageWidth: 1000,//图片的最大宽度
                 //maxImageHeight: 1000,//图片的最大高度
-                maxFileSize: 150000,//单位为kb，如果为0表示不限制文件大小
+                maxFileSize: 0,//单位为kb，如果为0表示不限制文件大小
                 //minFileCount: 0,
                 maxFileCount: 10, //表示允许同时上传的最大文件个数
                 enctype: 'multipart/form-data',
