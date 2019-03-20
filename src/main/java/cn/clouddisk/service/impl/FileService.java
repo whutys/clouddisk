@@ -1,4 +1,4 @@
-package cn.clouddisk.service;
+package cn.clouddisk.service.impl;
 
 import cn.clouddisk.entity.MyFile;
 import cn.clouddisk.entity.PageBean;

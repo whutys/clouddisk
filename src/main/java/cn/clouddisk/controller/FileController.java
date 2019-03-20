@@ -3,9 +3,8 @@ package cn.clouddisk.controller;
 import cn.clouddisk.entity.MyFile;
 import cn.clouddisk.entity.PageBean;
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.FileService;
-import cn.clouddisk.service.PlayListService;
-import cn.clouddisk.service.UserService;
+import cn.clouddisk.service.impl.FileService;
+import cn.clouddisk.service.impl.PlayListService;
 import cn.clouddisk.utils.MyUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -47,14 +46,14 @@ public class FileController {
         // 判断该用户是否拥有此文件
         try {
             String username = fileService.findFilepathById(id);
-            String login_user = ((User) request.getSession().getAttribute("user")).getUserName();
+            String login_user = ((User) request.getSession().getAttribute("user")).getUsername();
             String filename = fileService.findFilenameById(id); // 查出文件名
             if (username != null && login_user.equals(username)) {
                 // 从硬盘上删除文件
                 String storepath = storePath + File.separator + login_user + File.separator + filename;
                 System.out.println(storepath);
                 File file = new File(storepath);
-                if (file.exists()&&file.delete()) {
+                if (file.exists() && file.delete()) {
                     fileService.deleteFileById(id); // 删除数据库的该文件记录
                 }
                 return "redirect:/userHome";
@@ -83,7 +82,7 @@ public class FileController {
                 return "redirect:/signInPage";
             }
             model.addAttribute("user", user);
-            String username = user.getUserName();
+            String username = user.getUsername();
             filepath = username;
             Map<String, Object> map = new HashMap<>();
             countUserFiles = fileService.countUserFiles(filepath);
@@ -110,13 +109,7 @@ public class FileController {
             }
             map.put("types", types);
             list = fileService.getUserFiles(map);
-            //播放信息
-            Map<String, String> videoInfo = playListService.findVideoInfo(username);
-            String videoName = videoInfo.get("videoName");
-            if (videoName == null) {
-                videoName = "无";
-                playListService.setPlayList(username, videoName);
-            }
+
 //            request.getSession().setAttribute("videoName", videoName);
 //            request.getSession().setAttribute();
         } catch (Exception e) {
@@ -166,7 +159,6 @@ public class FileController {
         try {
             filename = URLDecoder.decode(filename, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         model.addAttribute("url",
@@ -178,7 +170,18 @@ public class FileController {
     @RequestMapping("/vipPlayer")
     public String vipAnalysis(HttpSession httpSession, Model model) {
         User user = (User) httpSession.getAttribute("user");
-        Map<String, String> videoInfo = playListService.findVideoInfo(user.getUserName());
+        String username = user.getUsername();
+        //播放信息
+        Map<String, String> videoInfo = playListService.findVideoInfo(username);
+        if (videoInfo == null) {
+            playListService.setPlayList(username, "无");
+        } else {
+            String videoName = videoInfo.get("videoName");
+            if (videoName == null) {
+                videoName = "无";
+                playListService.setPlayList(username, videoName);
+            }
+        }
         model.addAttribute("videoInfo", videoInfo);
         return "vip_analysis";
     }
@@ -187,12 +190,12 @@ public class FileController {
     @GetMapping("/getTitle")
     public String getTitle(HttpSession httpSession, String url) {
         User user = (User) httpSession.getAttribute("user");
-        String userName = null;
+        String username = null;
         if (user != null)
-            userName = user.getUserName();
+            username = user.getUsername();
         String videoName = MyUtils.getTitle(url);
 //        httpSession.setAttribute("videoName", videoName);
-        playListService.changeVideoInfo(userName, videoName, url);
+        playListService.changeVideoInfo(username, videoName, url);
         return videoName;
     }
 

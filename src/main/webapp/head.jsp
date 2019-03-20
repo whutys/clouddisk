@@ -26,8 +26,8 @@
             </li>
             <c:choose>
                 <c:when test="${user!=null}">
-                    <li><a href="${pageContext.request.contextPath}/autoSignIn?user_name=${user.userName}"><span
-                            class="glyphicon glyphicon-user"></span>${user.nickName}</a>
+                    <li><a href="${pageContext.request.contextPath}/autoSignIn?user_name=${user.username}"><span
+                            class="glyphicon glyphicon-user"></span>${user.nickname}</a>
                     </li>
                     <li><a href="${pageContext.request.contextPath}/signOut"><span
                             class="glyphicon glyphicon-log-out"></span>退 出</a></li>
@@ -35,15 +35,15 @@
                         <li><a href="#"><span class="glyphicon glyphicon-log-out"></span>注册VIP</a></li>
                     </c:if></c:when>
                 <c:otherwise>
-                    <li><a href="${pageContext.request.contextPath}/signInPage"><span
+                    <li><a href="${pageContext.request.contextPath}/logIn"><span
                             class="glyphicon glyphicon-log-in"></span>登录</a></li>
-                    <li><a href="${pageContext.request.contextPath}/registPage"><span
+                    <li><a href="${pageContext.request.contextPath}/register"><span
                             class="glyphicon glyphicon-log-in"></span>注册</a></li>
                 </c:otherwise>
             </c:choose>
             <li><a href="${pageContext.request.contextPath}/help.jsp"><span
                     class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
-            <li><a href="${pageContext.request.contextPath}/admin"><span
+            <li><a href="${pageContext.request.contextPath}/admin/logIn"><span
                     class="glyphicon glyphicon-info-sign"></span>管理员</a></li>
         </ul>
     </div>

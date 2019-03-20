@@ -2,6 +2,7 @@
          pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -47,72 +48,63 @@
 
 <div class="container-fluid">
     <div class="row">
+        <div class="col-xs-10 col-lg-11">
+            <form:form id="editForm" modelAttribute="user" method="post"
+                       class="form-horizontal"
+                       action="${pageContext.request.contextPath }/user/edit">
+                <div class="form-group">
+                    <form:hidden path="id" />
+                    <label class="col-lg-3 control-label">昵称</label>
+                    <div class="col-lg-5">
+                        <form:input path="nickname" type="text" class="form-control"
+                                    name="nickname" placeholder="请输入昵称"/>
+                        <span id="checknickname">${nickNameError }</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">用户名</label>
+                    <div class="col-lg-5">
+                        <form:input path="username" type="text" class="form-control"
+                                    name="userName" placeholder="请输入用户名"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">密码</label>
+                    <div class="col-lg-5">
+                        <form:input path="password" type="password" class="form-control"
+                                    name="passWord" placeholder="请输入密码"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="col-lg-3 control-label">电子邮箱</label>
+                    <div class="col-lg-5">
+                        <form:input path="email" type="text" class="form-control" name="email"
+                                    placeholder="请输入电子邮箱"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-lg-9 col-lg-offset-3">
+                        <button type="submit" class="btn btn-primary" name="submit"
+                                value="submit">提交</button>
+                        <button type="button" class="btn btn-info" id="resetBtn">重置</button>
+                    </div>
+                </div>
+            </form:form>
+        </div>
         <div class="col-xs-2 col-sm-2 col-lg-1" id="myScrollspy">
             <ul class="nav nav-pills nav-stacked">
                 <li id="user"><a href="javascript:void(0)">用户</a></li>
                 <li id="file"><a href="javascript:void(0)">文件</a></li>
             </ul>
         </div>
-        <div class="col-xs-10 col-lg-11">
-
-            <div class="row clearfix pre-scrollable ">
-                <div class="table-responsive " id="tb">
-                    <table class="table table-hover pre-scrollable">
-                        <thead>
-                        <tr>
-                            <th>用户名</th>
-                            <th>昵称</th>
-                            <th>电子邮箱</th>
-                            <th>是否会员</th>
-                            <th>操作</th>
-                        <tr>
-                        </thead>
-                        <tbody>
-                        <c:forEach var="user" items="${requestScope.users}"
-                                   varStatus="stat">
-                            <tr class="${stat.count%2==0?'success':'warning'}">
-                                <td><span>${user.username}</span></td>
-                                <td><span>${user.nickname}</span></td>
-                                <td><span>${user.email}</span></td>
-                                <td><span>${user.isVip}</span></td>
-                                <td>
-                                    <button type="button" class="btn btn-default btn-xs"
-                                            onclick="void(0)">
-                                        <span class="glyphicon glyphicon-edit"></span>修改
-                                    </button>
-                                    <button type="button" class="btn btn-danger btn-xs"
-                                            onclick="godelete(${user.id})">
-                                        <span class="glyphicon glyphicon-trash"></span>删除
-                                    </button>
-                                </td>
-                            </tr>
-                        </c:forEach>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     </div>
-    <script type="text/javascript">
-        function godelete(userId) {
-            var r = confirm("确认删除？");
-            if (r == true) {
-                window.location.href = '${pageContext.request.contextPath}/admin/deleteUser?id=' + userId;
-            } else {
-                return false;
-            }
-        };
-
-        function gochange(userId) {
-            var r = confirm("如果设置共享，您的文件将可以被其他人搜索到");
-            if (r == true) {
-                window.location.href = '${pageContext.request.contextPath}/changeUser?id='+userId;
-            } else {
-                location.reload();
-            }
-        }
-    </script>
-        
+</div>
+    
 </body>
 </html>
 

@@ -51,3 +51,16 @@ mybatis:
 #      springFramework:
 #        web: debug
 #storePath: D:\\BaiduYunDownload
+shiro:
+  user:
+    loginUrl: /signInForm
+    indexUrl: /userHome
+  cookie:
+    domain:
+    path: /
+    httpOnly: true
+    maxAge: 30
+  session:
+    expireTime: 30
+    dbSyncPeriod: 1
+    validationInterval: 10

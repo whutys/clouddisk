@@ -176,7 +176,7 @@
         var str = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
         filename = encodeURI(encodeURI(filename));
         if ('mp4' == str || 'ogg' == str) {
-            window.location.href = '${pageContext.request.contextPath}/videoPlay?userName=' + filepath + '&filename=' + filename;
+            window.location.href = '${pageContext.request.contextPath}/videoPlay?username=' + filepath + '&filename=' + filename;
         }
     };
 

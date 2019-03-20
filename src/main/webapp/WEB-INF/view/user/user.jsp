@@ -54,7 +54,11 @@
             </ul>
         </div>
         <div class="col-xs-10 col-lg-11">
-
+            <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
+                <a class="btn btn-success" onclick=""><span class="glyphicon glyphicon-plus-sign"></span>新增</a>
+                <a class="btn btn-primary" onclick=""><span class="glyphicon glyphicon-edit"></span>修改</a>
+                <a class="btn btn-danger" onclick=""><span class="glyphicon glyphicon-trash"></span>删除</a>
+            </div>
             <div class="row clearfix pre-scrollable ">
                 <div class="table-responsive " id="tb">
                     <table class="table table-hover pre-scrollable">
@@ -77,7 +81,7 @@
                                 <td><span>${user.isVip}</span></td>
                                 <td>
                                     <button type="button" class="btn btn-default btn-xs"
-                                            onclick="void(0)">
+                                            onclick="edit(${user.id})">
                                         <span class="glyphicon glyphicon-edit"></span>修改
                                     </button>
                                     <button type="button" class="btn btn-danger btn-xs"
@@ -93,26 +97,22 @@
             </div>
         </div>
     </div>
-    <script type="text/javascript">
-        function godelete(userId) {
-            var r = confirm("确认删除？");
-            if (r == true) {
-                window.location.href = '${pageContext.request.contextPath}/admin/deleteUser?id=' + userId;
-            } else {
-                return false;
-            }
-        };
-
-        function gochange(userId) {
-            var r = confirm("如果设置共享，您的文件将可以被其他人搜索到");
-            if (r == true) {
-                window.location.href = '${pageContext.request.contextPath}/changeUser?id='+userId;
-            } else {
-                location.reload();
-            }
+</div>
+<script type="text/javascript">
+    function godelete(userId) {
+        var r = confirm("确认删除？");
+        if (r == true) {
+            window.location.href = '${pageContext.request.contextPath}/user/remove/' + userId;
+        } else {
+            return false;
         }
-    </script>
-        
+    }
+
+    function edit(userId) {
+        window.location.href = '${pageContext.request.contextPath}/user/edit/' + userId;
+    }
+</script>
+    
 </body>
 </html>
 

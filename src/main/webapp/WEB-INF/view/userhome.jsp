@@ -215,7 +215,7 @@
     function openfile(filepath, filename) {
         var str = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
         if ('mp4' == str || 'ogg' == str) {
-            window.location.href = '${pageContext.request.contextPath}/videoPlay?userName=' + filepath + '&filename=' + filename;
+            window.location.href = '${pageContext.request.contextPath}/videoPlay?username=' + filepath + '&filename=' + filename;
         } else if ('mp3' == str || 'ogg' == str) {
             window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
         } else if ('txt' == str || 'doc' == str || 'pdf' == str) {

@@ -1,4 +1,4 @@
-package cn.clouddisk.service;
+package cn.clouddisk.service.impl;
 
 import cn.clouddisk.mapper.PlayListMapper;
 import org.springframework.beans.factory.annotation.Autowired;

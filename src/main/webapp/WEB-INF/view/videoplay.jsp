@@ -55,7 +55,7 @@
     <div class="collapse navbar-collapse" id="example-navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
             <li><a
-                    href="${pageContext.request.contextPath}/autoSignIn?user_name=${user.userName}"><span
+                    href="${pageContext.request.contextPath}/autoSignIn?user_name=${user.username}"><span
                     class="glyphicon glyphicon-user"></span>我的主页</a></li>
             <li><a href="${pageContext.request.contextPath}/index.jsp"><span
                     class="glyphicon glyphicon-home"></span>首页</a></li>

@@ -9,7 +9,7 @@ import java.util.Date;
 @Component
 @Scope("prototype")
 public class MyFile implements Serializable{
-	private static final long SerialVersionUID = 1L;
+	private static final long serialVersionUID = 4609044516426202121L;
 	private int id;
 	private String filename;
 	private String filepath;

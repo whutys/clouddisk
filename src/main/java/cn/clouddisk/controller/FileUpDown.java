@@ -2,12 +2,8 @@ package cn.clouddisk.controller;
 
 import cn.clouddisk.entity.MyFile;
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.FileService;
-import cn.clouddisk.service.UserService;
+import cn.clouddisk.service.impl.FileService;
 import cn.clouddisk.utils.MyUtils;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.ibatis.io.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -24,11 +20,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.UUID;
 
 @Controller
@@ -58,7 +52,7 @@ public class FileUpDown {
             map.put("error", "未登录");
             return map;
         }
-        String user_name = user.getUserName();
+        String user_name = user.getUsername();
         int isvip = 0;
         try {
             isvip = user.getIsVip();//userService.isVip(user_name);

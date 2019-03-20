@@ -41,8 +41,8 @@
 					<h2>登录</h2>
 				</div>
 				<form:form class="form-horizontal"
-					action="${pageContext.request.contextPath }/admin/signInForm"
-					modelAttribute="admin" method="post">
+					action="${pageContext.request.contextPath }/admin/logIn"
+					modelAttribute="user" method="post">
 					<div class="form-group">
 						<label class="col-lg-3 control-label"></label>
 						<div class="col-lg-5">
@@ -52,15 +52,15 @@
 					<div class="form-group">
 						<label for="inputUsername" class="col-lg-3 control-label">用户名</label>
 						<div class="col-lg-5">
-							<form:input path="adminName" type="text" class="form-control"
-								id="inputUsername" name="adminName" placeholder="请输入您的用户名" />
+							<form:input path="username" type="text" class="form-control"
+								id="inputUsername" name="username" placeholder="请输入您的用户名" />
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="inputPassword" class="col-lg-3 control-label">密码</label>
 						<div class="col-lg-5">
-							<form:input path="adminPassWord" type="password" class="form-control"
-								id="inputPassword" name="adminPassWord" placeholder="请输入您的密码" />
+							<form:input path="password" type="password" class="form-control"
+								id="inputPassword" name="password" placeholder="请输入您的密码" />
 						</div>
 					</div>
 					<div class="form-group">
