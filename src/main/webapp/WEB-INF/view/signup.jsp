@@ -51,9 +51,9 @@
 					<div class="form-group">
 						<label class="col-lg-3 control-label">昵称</label>
 						<div class="col-lg-5">
-							<input path="nickName" type="text" class="form-control"
+							<input path="nickname" type="text" class="form-control"
 								name="nickName" placeholder="请输入昵称" value="${user.nickName }"/>
-							<form:errors path="nickName"></form:errors>
+							<form:errors path="nickname"></form:errors>
 							<span id="checknickname">${nickNameError }</span>
 						</div>
 					</div>
@@ -61,18 +61,18 @@
 					<div class="form-group">
 						<label class="col-lg-3 control-label">用户名</label>
 						<div class="col-lg-5">
-							<input path="userName" type="text" class="form-control"
-								name="userName" placeholder="请输入用户名" value="${user.userName }" />
-							<form:errors path="userName"></form:errors>
+							<input path="username" type="text" class="form-control"
+								name="userName" placeholder="请输入用户名" value="${user.username }" />
+							<form:errors path="username"></form:errors>
 						</div>
 					</div>
 
 					<div class="form-group">
 						<label class="col-lg-3 control-label">密码</label>
 						<div class="col-lg-5">
-							<input path="passWord" type="password" class="form-control"
-								name="passWord" placeholder="请输入密码" value="${user.passWord }"/>
-							<form:errors path="passWord"></form:errors>
+							<input path="password" type="password" class="form-control"
+								name="passWord" placeholder="请输入密码" value="${user.password }"/>
+							<form:errors path="password"></form:errors>
 						</div>
 					</div>
 

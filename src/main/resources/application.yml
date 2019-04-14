@@ -1,6 +1,11 @@
 server:
   port: 80
+  session:
+    timeout: 3600
 spring:
+  application:
+    name: clouddisk
+
   mvc:
     static-path-pattern: /static/**
     view:
@@ -9,7 +14,9 @@ spring:
   http:
     multipart:
       enabled: true
-      max-file-size: 1048576000
+      max-file-size: 500MB
+      max-request-size: 500MB
+      location: D://BaiduYunDownload
     encoding:
       charset: UTF-8
   messages:
@@ -29,6 +36,7 @@ spring:
       maximum-pool-size: 10
     dbcp2:
       validation-query: select 1 from dual
+
 mybatis:
   mapper-locations: mapping/*.xml
   type-aliases-package: cn.clouddisk.entity
@@ -43,3 +51,16 @@ mybatis:
 #      springFramework:
 #        web: debug
 #storePath: D:\\BaiduYunDownload
+shiro:
+  user:
+    loginUrl: /signInForm
+    indexUrl: /userHome
+  cookie:
+    domain:
+    path: /
+    httpOnly: true
+    maxAge: 30
+  session:
+    expireTime: 30
+    dbSyncPeriod: 1
+    validationInterval: 10

@@ -2,12 +2,8 @@ package cn.clouddisk.controller;
 
 import cn.clouddisk.entity.MyFile;
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.FileService;
-import cn.clouddisk.service.UserService;
+import cn.clouddisk.service.impl.FileService;
 import cn.clouddisk.utils.MyUtils;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import org.apache.ibatis.io.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -24,18 +20,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.UUID;
 
 @Controller
 public class FileUpDown {
 
     @Value("${storePath}")
-    private String storePath ; // 存储目录 E:\\BaiduYunDownload
+    private String storePath; // 存储目录 E:\\BaiduYunDownload
     private static final long time = System.currentTimeMillis();
     private static final int normallimit = 1000 * 1024 * 1024; // 普通用户上传单个文件的最大体积 1G
     private static final long viplimit = 2000 * 1024 * 1024; // 普通用户上传单个文件的最大体积 2G
@@ -44,39 +38,46 @@ public class FileUpDown {
     @Autowired
     private FileService fileService;
     @Autowired
-    private UserService userService;
-    @Autowired
     private MyFile myFile;
 
     @ResponseBody
-    @PostMapping(value = "/uploadfile", produces = "text/html;charset=UTF-8")
-    public String upLoad(@RequestParam("file") MultipartFile multipartFile, HttpSession session) {
+    @PostMapping(value = "/uploadfile")
+    public Map<String, Object> upLoad(@RequestParam("file") MultipartFile multipartFile, HttpSession session) {
         String fileFileName = multipartFile.getOriginalFilename();
         String uuid = UUID.randomUUID() + MyUtils.getFileType(fileFileName);
         Map<String, Object> map = new HashMap<>();
         // session域存的username和传进来的username一致，说明用户名没有造假
         User user = (User) session.getAttribute("user");
-        String user_name = user.getUserName();
+        if (user == null) {
+            map.put("error", "未登录");
+            return map;
+        }
+        String user_name = user.getUsername();
         int isvip = 0;
         try {
             isvip = user.getIsVip();//userService.isVip(user_name);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
+        File dir=new File(storePath+File.separator+user_name);
+        if (!dir.exists())dir.mkdirs();
         File filetostore = new File(storePath + File.separator + user_name, fileFileName);
         long size = multipartFile.getSize(); // 上传文件的大小
-        if (user == null) {
-            map.put("error", "未登录");
-        } else if (size == 0) {
+        if (size == 0) {
             map.put("error", "文件大小不能为0");
-        }
-
-        else {
+        } else {
             if (filetostore.exists()) {
                 int index = fileFileName.lastIndexOf(".");
-                StringBuilder sb = new StringBuilder(fileFileName.substring(0, index));
-                sb.append("_").append(Long.toString((System.currentTimeMillis() - time) >> 3));
-                sb.append(fileFileName.substring(index));
+                StringBuilder sb;
+                String str = Long.toString((System.currentTimeMillis() - time) >> 3);
+                if (index < 0) {
+                    sb = new StringBuilder(fileFileName);
+                    sb.append("_").append(str);
+                } else {
+                    sb = new StringBuilder(fileFileName.substring(0, index));
+                    sb.append("_").append(str);
+                    sb.append(fileFileName.substring(index));
+                }
                 fileFileName = sb.toString();
                 filetostore = new File(storePath + File.separator + user_name, fileFileName);
             }
@@ -110,8 +111,8 @@ public class FileUpDown {
                 }
             }
         }
-        System.out.println(JSONObject.parseObject(JSON.toJSONString(map)));
-        return JSONObject.parseObject(JSON.toJSONString(map)).toJSONString();
+//        System.out.println(JSONObject.parseObject(JSON.toJSONString(map)));
+        return map;//JSONObject.parseObject(JSON.toJSONString(map)).toJSONString();
     }
 
     @RequestMapping("/download")
@@ -130,8 +131,8 @@ public class FileUpDown {
                     "attachment;filename=" + URLEncoder.encode(myFile.getFilename(), "UTF-8"));
 
             in = new FileInputStream(file);
-            int len = 0;
-            byte buffer[] = new byte[1024];
+            int len;
+            byte[] buffer = new byte[1024];
             OutputStream out = response.getOutputStream();
             while ((len = in.read(buffer)) > 0) {
                 out.write(buffer, 0, len);

@@ -43,7 +43,7 @@
 					<h2>登录</h2>
 				</div>
 				<form:form class="form-horizontal"
-					action="${pageContext.request.contextPath }/signInForm"
+					action="${pageContext.request.contextPath }/logIn"
 					modelAttribute="user" method="post">
 					<div class="form-group">
 						<label class="col-lg-3 control-label"></label>
@@ -54,21 +54,21 @@
 					<div class="form-group">
 						<label for="inputUsername" class="col-lg-3 control-label">用户名</label>
 						<div class="col-lg-5">
-							<form:input path="userName" type="text" class="form-control"
-								id="inputUsername" name="userName" placeholder="请输入您的用户名" />
+							<form:input path="username" type="text" class="form-control"
+								id="inputUsername" name="username" placeholder="请输入您的用户名" />
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="inputPassword" class="col-lg-3 control-label">密码</label>
 						<div class="col-lg-5">
-							<form:input path="passWord" type="password" class="form-control"
+							<form:input path="password" type="password" class="form-control"
 								id="inputPassword" name="passWord" placeholder="请输入您的密码" />
 						</div>
 					</div>
 					<div class="form-group">
 						<div class="col-sm-offset-3 col-lg-5">
 							<div class="checkbox">
-								<label><input type="checkbox" />记住密码</label>
+								<label><input type="checkbox" id="rememberMe" name="rememberMe"/>记住我</label>
 							</div>
 						</div>
 					</div>

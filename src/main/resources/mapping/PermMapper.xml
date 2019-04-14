@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.clouddisk.mapper.PermMapper">
+    <cache eviction="FIFO" flushInterval="60000" readOnly="false" type="org.mybatis.caches.redis.RedisCache"/>
+
+    <resultMap id="PermResult" type="cn.clouddisk.entity.Perm">
+        <id property="id" column="id"/>
+        <result property="permName" column="perm_name"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="url" column="url"/>
+        <result property="permKey" column="perm_key"/>
+    </resultMap>
+
+    <sql id="selectPermConcat">
+        select p.id,p.perm_name,p.parent_id,p.url,p.perm_key
+        from perm p
+                 left join role_perm rp on rp.perm_id = p.id
+                 left join user_role ur on ur.role_id = rp.role_id
+                 left join user u on u.id = ur.user_id
+    </sql>
+
+    <sql id="selectPerm">
+        select p.id,p.perm_name,p.parent_id,p.url,p.perm_key
+        from perm p
+    </sql>
+
+    <select id="selectPermList" parameterType="cn.clouddisk.entity.Perm" resultMap="PermResult">
+        <include refid="selectPermConcat"/>
+        <trim prefix="WHERE" prefixOverrides="and">
+            <if test="permName!=null and permName!=''">
+                and perm_name like concat('%',#{pemName},'%')
+            </if>
+        </trim>
+    </select>
+
+    <select id="selectPermByUserId" parameterType="Integer" resultMap="PermResult">
+        <include refid="selectPermConcat"/>
+        WHERE u.id = #{userId}
+    </select>
+
+    <select id="selectPermById" parameterType="Integer" resultMap="PermResult">
+        <include refid="selectPerm"/>
+        where p.id=#{permId}
+    </select>
+</mapper>

@@ -9,13 +9,13 @@
     <title>我的CloudDisk</title>
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="static/css/bootstrap.css"/>
-    <link rel="stylesheet" href="static/css/fileinput.min.css"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/css/fileinput.min.css"/>
 
-    <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="static/js/fileinput.min.js"></script>
-    <script type="text/javascript" src="static/js/locales/zh.js"></script>
-    <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="/static/js/locales/zh.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(function () {
             //$("#pagesize").get(0).selectedIndex=${pagebean.pagesize/5-1 };
@@ -36,7 +36,7 @@
                 //minImageHeight: 50,//图片的最小高度
                 //maxImageWidth: 1000,//图片的最大宽度
                 //maxImageHeight: 1000,//图片的最大高度
-                maxFileSize: 150000,//单位为kb，如果为0表示不限制文件大小
+                maxFileSize: 0,//单位为kb，如果为0表示不限制文件大小
                 //minFileCount: 0,
                 maxFileCount: 10, //表示允许同时上传的最大文件个数
                 enctype: 'multipart/form-data',
@@ -50,8 +50,8 @@
             });
 
             //按钮点击
-            $('.nav li a').click(function () {
-                window.location.href = '${pageContext.request.contextPath }/searchUserFile?filetype=' + $(this).parent().attr("id");
+            $('#myScrollspy li a').click(function () {
+                window.location.href = '${pageContext.request.contextPath }/userHome?filetype=' + $(this).parent().attr("id");
             });
 
             $('#' + '${sessionScope.filetype}').addClass('active');
@@ -60,32 +60,7 @@
     </script>
 </head>
 <body>
-<nav class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target="#example-navbar-collapse">
-            <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
-                class="icon-bar"></span> <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">410云盘</a>
-    </div>
-    <div class="collapse navbar-collapse" id="example-navbar-collapse">
-        <ul class="nav navbar-nav navbar-right">
-            <c:if test="${user!=null}">
-                <li><a href="javscript:void(0)"><span class="glyphicon glyphicon-user"></span>${user.nickName}</a></li>
-            </c:if>
-            <li><a href="${pageContext.request.contextPath}/signOut"><span
-                    class="glyphicon glyphicon-log-out"></span>退 出</a></li>
-            <c:if test="${user.isVip==0 }">
-                <li><a href="#"><span class="glyphicon glyphicon-log-out"></span>注册VIP</a></li>
-            </c:if>
-            <li><a href="${pageContext.request.contextPath}/index.jsp"><span
-                    class="glyphicon glyphicon-home"></span>首页</a></li>
-            <li><a href="${pageContext.request.contextPath}/help.jsp"><span
-                    class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
-        </ul>
-    </div>
-</nav>
+<%@include file="/head.jsp" %>
 
 <div class="container-fluid">
     <div class="row">
@@ -166,9 +141,8 @@
                                        varStatus="stat">
                             <tr class="${stat.count%2==0?'success':'warning'}">
                                 <td><a class="btn"
-                                       onclick="openfile('${c.filepath}','${c.filename }')"> <c:set
-                                        var="filetype"
-                                        value="${c.filename.substring(c.filename.lastIndexOf('.')+1,c.filename.length())}"></c:set>
+                                       onclick="openfile('${c.filepath}','${c.filename }')"> <c:set var="filetype"
+                                                                                                    value="${c.filename.substring(c.filename.lastIndexOf('.')+1,c.filename.length())}"></c:set>
                                     <c:choose>
                                         <c:when test="${filetype=='mp4' }">
                                             <span class="glyphicon glyphicon-hd-video"></span>
@@ -211,7 +185,7 @@
                                     </button>
                                 </td>
                                 <td><select class="form-control input-sm" id="${c.id}"
-                                            onchange="gochange(${pagebean.currentpage},${c.id})">
+                                            onchange="change(${pagebean.currentpage},${c.id})">
                                     <c:if test="${c.canshare==0 }">
                                         <option value="0">私有</option>
                                         <option value="1">共享</option>
@@ -241,15 +215,12 @@
     function openfile(filepath, filename) {
         var str = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
         if ('mp4' == str || 'ogg' == str) {
-            window.location.href = '${pageContext.request.contextPath}/videoPlay?userName=' + filepath + '&filename=' + filename;
-        }
-        else if ('mp3' == str || 'ogg' == str) {
+            window.location.href = '${pageContext.request.contextPath}/videoPlay?username=' + filepath + '&filename=' + filename;
+        } else if ('mp3' == str || 'ogg' == str) {
             window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
-        }
-        else if ('txt' == str || 'doc' == str || 'pdf' == str) {
+        } else if ('txt' == str || 'doc' == str || 'pdf' == str) {
             window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
-        }
-        else if ('jpg' == str || 'jpeg' == str || 'png' == str) {
+        } else if ('jpg' == str || 'jpeg' == str || 'png' == str) {
             window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
         }
     };
@@ -267,7 +238,7 @@
         }
     };
 
-    function gochange(currentpage, fileid) {
+    function change(currentpage, fileid) {
 
         var canshare = document.getElementById(fileid).value;
         var pagesize = ${pagebean.pagesize};

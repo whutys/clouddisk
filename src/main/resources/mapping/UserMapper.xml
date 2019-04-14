@@ -5,34 +5,81 @@
 <mapper namespace="cn.clouddisk.mapper.UserMapper">
     <cache eviction="FIFO" flushInterval="60000" readOnly="false" type="org.mybatis.caches.redis.RedisCache"/>
 
-    <select id="checkUser" parameterType="java.util.Map" resultType="map">
-        SELECT id,nickName,isVip
-        FROM user
-        WHERE userName = #{userName} AND
-              passWord = #{passWord}
+    <resultMap id="UserResult" type="cn.clouddisk.entity.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="email" column="email"/>
+        <result property="isVip" column="isVip"/>
+    </resultMap>
+
+    <select id="selectUserList" parameterType="User" resultMap="UserResult">
+        select id,username,password,nickname,email
+        from user
+        <trim prefix="WHERE" prefixOverrides="and">
+            <if test="username!=null and username!=''">
+                and username like concat('%',#{username},'%')
+            </if>
+        </trim>
     </select>
 
+    <select id="checkUser" parameterType="java.util.Map" resultType="map">
+        SELECT username,nickname,isVip
+        FROM user
+        WHERE username = #{username}
+          AND
+            password = #{password}
+    </select>
+
+    <select id="selectUserByName" parameterType="java.lang.String" resultMap="UserResult">
+        SELECT id,username,password,nickname,email,isvip
+        FROM user
+        WHERE username = #{username}
+    </select>
+    <select id="selectUserById" parameterType="int" resultMap="UserResult">
+        SELECT id,username,password,nickname,email,isvip
+        FROM user
+        WHERE id = #{userId}
+    </select>
     <select id="findUser" parameterType="java.lang.String"
             resultType="java.lang.Integer">
         SELECT user.id
         FROM user
-        WHERE userName = #{userName}
+        WHERE username = #{username}
     </select>
 
     <select id="isVip" parameterType="java.lang.String"
             resultType="int">
         SELECT isVip
         FROM user
-        WHERE userName = #{value}
+        WHERE username = #{value}
     </select>
 
-    <insert id="createUser" parameterType="cn.clouddisk.entity.User">
+    <insert id="insertUser" parameterType="cn.clouddisk.entity.User" useGeneratedKeys="true" keyProperty="id">
         <selectKey keyProperty="id" order="AFTER"
                    resultType="java.lang.Integer">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        INSERT INTO user(userName,passWord,email,nickName,isVip)
-        VALUES(#{userName},#{passWord},#{email},#{nickName},#{isVip})
+        INSERT INTO user(username,password,email,nickname,isVip)
+        VALUES(#{username},#{password},#{email},#{nickname},#{isVip})
     </insert>
+    <delete id="deleteUserById" parameterType="int">
+        delete
+        from user
+        where id = #{userId}
+    </delete>
+    <update id="updateUser" parameterType="User">
+        update user
+        <set>
+            <if test="username!=null and username!=''">username=#{username},</if>
+            <if test="password!=null and password!=''">password=#{password},</if>
+            <if test="nickname!=null and nickname!=''">nickname=#{nickname},</if>
+            <if test="email!=null and email!=''">email=#{email},</if>
+            <if test="isVip!=null and isVip!=0">isVip=#{isVip},</if>
+        </set>
+        where id=#{id}
+    </update>
+
 
 </mapper>

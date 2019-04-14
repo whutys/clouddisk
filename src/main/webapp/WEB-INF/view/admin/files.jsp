@@ -12,10 +12,10 @@
     <link rel="stylesheet" href="static/css/bootstrap.css"/>
     <link rel="stylesheet" href="static/css/fileinput.min.css"/>
 
-    <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="static/js/fileinput.min.js"></script>
-    <script type="text/javascript" src="static/js/locales/zh.js"></script>
-    <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="/static/js/locales/zh.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(function () {
             //$("#pagesize").get(0).selectedIndex=${pagebean.pagesize/5-1 };
@@ -238,7 +238,7 @@
     function openfile(filepath, filename) {
         var str = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
         if ('mp4' == str || 'ogg' == str) {
-            window.location.href = '${pageContext.request.contextPath}/videoPlay?userName=' + filepath + '&filename=' + filename;
+            window.location.href = '${pageContext.request.contextPath}/videoPlay?username=' + filepath + '&filename=' + filename;
         }
         else if ('mp3' == str || 'ogg' == str) {
             window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;

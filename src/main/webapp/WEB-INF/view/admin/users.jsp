@@ -71,8 +71,8 @@
                         <c:forEach var="user" items="${requestScope.users}"
                                    varStatus="stat">
                             <tr class="${stat.count%2==0?'success':'warning'}">
-                                <td><span>${user.userName}</span></td>
-                                <td><span>${user.nickName}</span></td>
+                                <td><span>${user.username}</span></td>
+                                <td><span>${user.nickname}</span></td>
                                 <td><span>${user.email}</span></td>
                                 <td><span>${user.isVip}</span></td>
                                 <td>
