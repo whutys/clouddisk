@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
 <nav class="navbar navbar-default" role="navigation">
     <div class="navbar-header">
         <button type="button" class="navbar-toggle" data-toggle="collapse"
@@ -7,7 +8,8 @@
             <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
                 class="icon-bar"></span> <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/">410云盘</a>
+        <shiro:hasRole name="admin"><a class="navbar-brand" href="/user">管理员</a></shiro:hasRole>
+        <shiro:lacksRole name="admin"><a class="navbar-brand" href="/">410云盘</a></shiro:lacksRole>
     </div>
     <div class="collapse navbar-collapse" id="example-navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
@@ -24,27 +26,24 @@
                     <li><a href="#">待加入</a></li>
                 </ul>
             </li>
-            <c:choose>
-                <c:when test="${user!=null}">
-                    <li><a href="${pageContext.request.contextPath}/autoSignIn?user_name=${user.username}"><span
-                            class="glyphicon glyphicon-user"></span>${user.nickname}</a>
-                    </li>
-                    <li><a href="${pageContext.request.contextPath}/signOut"><span
-                            class="glyphicon glyphicon-log-out"></span>退 出</a></li>
-                    <c:if test="${user.isVip==0 }">
-                        <li><a href="#"><span class="glyphicon glyphicon-log-out"></span>注册VIP</a></li>
-                    </c:if></c:when>
-                <c:otherwise>
-                    <li><a href="${pageContext.request.contextPath}/logIn"><span
-                            class="glyphicon glyphicon-log-in"></span>登录</a></li>
-                    <li><a href="${pageContext.request.contextPath}/register"><span
-                            class="glyphicon glyphicon-log-in"></span>注册</a></li>
-                </c:otherwise>
-            </c:choose>
+            <shiro:user>
+                <li><a href="${pageContext.request.contextPath}/autoLogin"><span
+                        class="glyphicon glyphicon-user"></span><shiro:principal property="nickname"/></a>
+                </li>
+                <li><a href="${pageContext.request.contextPath}/signOut"><span
+                        class="glyphicon glyphicon-log-out"></span>退 出</a></li>
+                <shiro:lacksRole name="vip">
+                    <li><a href="#"><span class="glyphicon glyphicon-log-out"></span>注册VIP</a></li>
+                </shiro:lacksRole>
+            </shiro:user>
+            <shiro:guest>
+                <li><a href="${pageContext.request.contextPath}/logIn"><span
+                        class="glyphicon glyphicon-log-in"></span>登录</a></li>
+                <li><a href="${pageContext.request.contextPath}/register"><span
+                        class="glyphicon glyphicon-log-in"></span>注册</a></li>
+            </shiro:guest>
             <li><a href="${pageContext.request.contextPath}/help.jsp"><span
                     class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
-            <li><a href="${pageContext.request.contextPath}/admin/logIn"><span
-                    class="glyphicon glyphicon-info-sign"></span>管理员</a></li>
         </ul>
     </div>
 </nav>

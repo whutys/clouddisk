@@ -3,7 +3,9 @@ package cn.clouddisk.controller;
 import cn.clouddisk.entity.MyFile;
 import cn.clouddisk.entity.User;
 import cn.clouddisk.service.impl.FileService;
-import cn.clouddisk.utils.MyUtils;
+import cn.clouddisk.utils.CrawlUtils;
+import cn.clouddisk.utils.ShiroUtils;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -15,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+@RequiresUser
 @Controller
 public class FileUpDown {
 
@@ -42,16 +44,11 @@ public class FileUpDown {
 
     @ResponseBody
     @PostMapping(value = "/uploadfile")
-    public Map<String, Object> upLoad(@RequestParam("file") MultipartFile multipartFile, HttpSession session) {
+    public Map<String, Object> upLoad(@RequestParam("file") MultipartFile multipartFile) {
         String fileFileName = multipartFile.getOriginalFilename();
-        String uuid = UUID.randomUUID() + MyUtils.getFileType(fileFileName);
+        String uuid = UUID.randomUUID() + CrawlUtils.getFileType(fileFileName);
         Map<String, Object> map = new HashMap<>();
-        // session域存的username和传进来的username一致，说明用户名没有造假
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            map.put("error", "未登录");
-            return map;
-        }
+        User user = ShiroUtils.getUser();
         String user_name = user.getUsername();
         int isvip = 0;
         try {

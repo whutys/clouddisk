@@ -9,19 +9,10 @@ import java.util.Map;
 public interface UserMapper {
 
 	List<User> selectUserList(User user);
+	User selectUserById(int userId);
 	int insertUser(User user);
-
-	Map<String,Object> checkUser(User user) throws Exception;
-	Integer findUser(String username) throws Exception;
-	Integer isVip(String user_name)throws Exception;
-
 	User selectUserByName(String username);
-
-
 	int deleteUserById(int userId);
-
 	int updateUser(User user);
-
-    User selectUserById(int userId);
 }
 

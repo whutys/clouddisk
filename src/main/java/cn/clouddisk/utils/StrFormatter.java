@@ -2,8 +2,6 @@ package cn.clouddisk.utils;
 
 /**
  * 字符串格式化
- * 
- * @author ruoyi
  */
 public class StrFormatter
 {

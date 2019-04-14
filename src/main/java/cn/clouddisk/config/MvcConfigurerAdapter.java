@@ -28,8 +28,8 @@ public class MvcConfigurerAdapter extends WebMvcConfigurerAdapter {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
 //        List<String> excludePatterns = new ArrayList<>();
-        registry.addInterceptor(new LoginInterceptor())
-                .addPathPatterns("/searchUserFile", "/vipPlayer")
-                .excludePathPatterns("/signInPage");
+//        registry.addInterceptor(new LoginInterceptor())
+//                .addPathPatterns("/searchUserFile", "/vipPlayer")
+//                .excludePathPatterns("/signInPage");
     }
 }

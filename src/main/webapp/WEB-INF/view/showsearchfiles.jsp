@@ -22,31 +22,6 @@
 </head>
 <body>
 <%@include file="/head.jsp" %>
-<%--<nav class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target="#example-navbar-collapse">
-            <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
-                class="icon-bar"></span> <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">410云盘</a>
-    </div>
-    <div class="collapse navbar-collapse" id="example-navbar-collapse">
-        <ul class="nav navbar-nav navbar-right">
-            <li><a href="${pageContext.request.contextPath}/index.jsp"><span
-                    class="glyphicon glyphicon-home"></span>首页</a></li>
-            <li><a href="${pageContext.request.contextPath}/signInPage"><span
-                    class="glyphicon glyphicon-log-in"></span>登录</a></li>
-            <li><a href="${pageContext.request.contextPath}/registPage"><span
-                    class="glyphicon glyphicon-log-in"></span>注册</a></li>
-            <li><a
-                    href="${pageContext.request.contextPath}/autoSignIn?user_name=${user_name}"><span
-                    class="glyphicon glyphicon-user"></span>我的主页</a></li>
-            <li><a href="${pageContext.request.contextPath}/help.jsp"><span
-                    class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
-        </ul>
-    </div>
-</nav>--%>
 <div class="col-lg-offset-1">
     <div class="page-header">
         <h3>搜索结果</h3>

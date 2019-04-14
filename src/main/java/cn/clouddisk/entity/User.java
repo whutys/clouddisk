@@ -11,13 +11,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Getter
 @Setter
 @ToString
 @Component
 //@Scope("prototype")
-public class User extends BaseEntity{
+public class User extends BaseEntity {
     private int id;
     @NotEmpty(message = "用户名不能为空")
     @Length(min = 6, max = 20, message = "用户名长度必须为6-20")
@@ -36,5 +37,6 @@ public class User extends BaseEntity{
     private int isVip;
     @NotEmpty
     private String inviteCode;
-
+    private String salt;
+    private List<Role> roles;
 }

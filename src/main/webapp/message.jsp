@@ -27,6 +27,7 @@
 		timer = setInterval('dis()', 1000); //显示时间
 		timer = setTimeout('Redirect()', time * 1000); //跳转
 	</script>
+
 	<div class="container">
 		<span id="s"></span>
 	</div>
