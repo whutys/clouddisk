@@ -47,6 +47,8 @@
 						class="glyphicon glyphicon-user"></span>我的主页</a></li>
 				<li><a href="${pageContext.request.contextPath}/help.jsp"><span
 						class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
+				<li><a href="${pageContext.request.contextPath}/admin"><span
+						class="glyphicon glyphicon-info-sign"></span>管理员</a></li>
 			</ul>
 		</div>
 	</nav>

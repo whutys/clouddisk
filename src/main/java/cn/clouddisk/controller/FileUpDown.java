@@ -1,6 +1,7 @@
 package cn.clouddisk.controller;
 
 import cn.clouddisk.entity.MyFile;
+import cn.clouddisk.entity.User;
 import cn.clouddisk.service.FileService;
 import cn.clouddisk.service.UserService;
 import cn.clouddisk.utils.MyUtils;
@@ -8,6 +9,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.io.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,18 +33,9 @@ import java.util.UUID;
 
 @Controller
 public class FileUpDown {
-    private static Properties properties;
 
-    static {
-        properties = new Properties();
-        try {
-            properties.load(Resources.getResourceAsStream("settings.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static final String storePath = "E:" + File.separatorChar + properties.getProperty("storePath"); // 存储目录 E:\\BaiduYunDownload
+    @Value("${storePath}")
+    private String storePath ; // 存储目录 E:\\BaiduYunDownload
     private static final long time = System.currentTimeMillis();
     private static final int normallimit = 1000 * 1024 * 1024; // 普通用户上传单个文件的最大体积 1G
     private static final long viplimit = 2000 * 1024 * 1024; // 普通用户上传单个文件的最大体积 2G
@@ -62,26 +55,21 @@ public class FileUpDown {
         String uuid = UUID.randomUUID() + MyUtils.getFileType(fileFileName);
         Map<String, Object> map = new HashMap<>();
         // session域存的username和传进来的username一致，说明用户名没有造假
-        String user_name = (String) session.getAttribute("user_name");
+        User user = (User) session.getAttribute("user");
+        String user_name = user.getUserName();
         int isvip = 0;
         try {
-            isvip = userService.isVip(user_name);
+            isvip = user.getIsVip();//userService.isVip(user_name);
         } catch (Exception e1) {
             e1.printStackTrace();
         }
         File filetostore = new File(storePath + File.separator + user_name, fileFileName);
         long size = multipartFile.getSize(); // 上传文件的大小
-        if (user_name == null || "".equals(user_name)) {
+        if (user == null) {
             map.put("error", "未登录");
         } else if (size == 0) {
             map.put("error", "文件大小不能为0");
         }
-        // try {
-        // // 存在每个用户有一个自己名字命名的文件夹
-        // } catch (Exception e) {
-        // request.setAttribute("message", "请先选择文件！");
-        // return "forward:/searchUserFile";
-        // }
 
         else {
             if (filetostore.exists()) {

@@ -6,7 +6,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>我的CloudDisk</title>
+    <title>管理CloudDisk</title>
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="static/css/bootstrap.css"/>
@@ -67,7 +67,7 @@
             <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
                 class="icon-bar"></span> <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">410云盘</a>
+        <a class="navbar-brand" href="#">管理员</a>
     </div>
     <div class="collapse navbar-collapse" id="example-navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
@@ -76,9 +76,6 @@
             </c:if>
             <li><a href="${pageContext.request.contextPath}/signOut"><span
                     class="glyphicon glyphicon-log-out"></span>退 出</a></li>
-            <c:if test="${user.isVip==0 }">
-                <li><a href="#"><span class="glyphicon glyphicon-log-out"></span>注册VIP</a></li>
-            </c:if>
             <li><a href="${pageContext.request.contextPath}/index.jsp"><span
                     class="glyphicon glyphicon-home"></span>首页</a></li>
             <li><a href="${pageContext.request.contextPath}/help.jsp"><span
@@ -100,140 +97,10 @@
             </ul>
         </div>
         <div class="col-xs-10 col-lg-11">
-            <div class="">
-                <div class="row">
-                    <div class="dropdown col-lg-1 col-xs-3">
-                        <button type="button"
-                                class="btn btn-primary btn-sm dropdown-toggle"
-                                id="dropdownMenu1" data-toggle="dropdown">
-                            <span class="glyphicon glyphicon-cloud-upload"></span>上传
-                        </button>
-                        <ul class="dropdown-menu" role="menu"
-                            aria-labelledby="dropdownMenu1">
-                            <li role="presentation"><a class="btn" data-toggle="modal"
-                                                       href="#myModal1"> 文件上传 </a></li>
-                            <li role="presentation"><a class="btn" data-toggle="modal"
-                                                       data-target="#myModal2"> 文件夹上传 </a></li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-1 col-xs-3">
-                        <button type="button" class="btn btn-primary btn-sm">离线下载</button>
-                    </div>
-                    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
-                         aria-labelledby="myModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal"
-                                            aria-hidden="true">×
-                                    </button>
-                                    <h4 class="modal-title" id="myModalLabel">上传文件</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="col-lg-12">
-                                        <div class="form-group">
-                                            <input id="fileupload" name="file" type="file" multiple/>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <!-- <button type="button" class="btn btn-default"
-                                    data-dismiss="modal">关闭</button>
-                                <button type="button" class="btn btn-primary">提交更改</button> -->
-                                </div>
-                            </div>
-                            <!-- /.modal-content -->
-                        </div>
-                        <!-- /.modal-dialog -->
-                    </div>
+            <noframes>
+                <fr
+            </noframes>
 
-                </div>
-                <div class="row clearfix pre-scrollable ">
-                    <div class="table-responsive " id="tb">
-                        <table class="table table-hover pre-scrollable">
-                            <thead>
-                            <tr>
-                                <th>文件名</th>
-                                <th>文件大小</th>
-                                <th>修改日期</th>
-                                <th>下载文件</th>
-                                <th>是否共享</th>
-                                <th>操作</th>
-                            <tr>
-                            </thead>
-                            <tbody>
-                            <c:forEach var="c" items="${requestScope.pagebean.list}"
-                                       varStatus="stat">
-                            <tr class="${stat.count%2==0?'success':'warning'}">
-                                <td><a class="btn"
-                                       onclick="openfile('${c.filepath}','${c.filename }')"> <c:set
-                                        var="filetype"
-                                        value="${c.filename.substring(c.filename.lastIndexOf('.')+1,c.filename.length())}"></c:set>
-                                    <c:choose>
-                                        <c:when test="${filetype=='mp4' }">
-                                            <span class="glyphicon glyphicon-hd-video"></span>
-                                        </c:when>
-
-                                        <c:when test="${filetype=='mp3' }">
-                                            <span class="glyphicon glyphicon-play-music"></span>
-                                        </c:when>
-
-                                        <c:when test="${filetype=='jpg'||filetype=='png' }">
-                                            <span class="glyphicon glyphicon-picture"></span>
-                                        </c:when>
-
-                                        <c:when
-                                                test="${filetype=='txt'||filetype=='pdf'||filetype=='doc' }">
-                                            <span class="glyphicon glyphicon-file"></span>
-                                        </c:when>
-                                    </c:choose> ${c.filename }
-                                </a></td>
-                                <td><c:choose>
-                                    <c:when test="${c.filesize>1048576}">
-                                        <fmt:formatNumber type="number"
-                                                          value="${c.filesize/1048576 }" pattern="0.0"
-                                                          maxFractionDigits="1"></fmt:formatNumber>G</c:when>
-                                    <c:when test="${c.filesize>1024}">
-                                        <fmt:formatNumber type="number"
-                                                          value="${c.filesize/1024 }" pattern="0.0"
-                                                          maxFractionDigits="1"></fmt:formatNumber>M</c:when>
-                                    <c:otherwise>
-                                        <fmt:formatNumber type="number" value="${c.filesize}"
-                                                          pattern="0.0"
-                                                          maxFractionDigits="1"></fmt:formatNumber>k</c:otherwise>
-                                </c:choose></td>
-                                <td><fmt:formatDate value="${c.createtime }"
-                                                    pattern="yyyy-MM-dd HH:mm"/></td>
-                                <td>
-                                    <button type="button" class="btn btn-primary btn-xs"
-                                            onclick="downloadfile('${c.id}','${c.filename }')">
-                                        <span class="glyphicon glyphicon-download-alt"></span>下载
-                                    </button>
-                                </td>
-                                <td><select class="form-control input-sm" id="${c.id}"
-                                            onchange="gochange(${pagebean.currentpage},${c.id})">
-                                    <c:if test="${c.canshare==0 }">
-                                        <option value="0">私有</option>
-                                        <option value="1">共享</option>
-                                    </c:if>
-                                    <c:if test="${c.canshare==1 }">
-                                        <option value="1" selected="selected">共享</option>
-                                        <option value="0">私有</option>
-                                    </c:if>
-                                </select></td>
-                                <td>
-                                    <button type="button" class="btn btn-danger btn-xs"
-                                            onclick="godelete(${c.id})">
-                                        <span class="glyphicon glyphicon-trash"></span>删除
-                                    </button>
-                                </td>
-                            <tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </div>

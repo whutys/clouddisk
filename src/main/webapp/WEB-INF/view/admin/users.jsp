@@ -9,54 +9,15 @@
     <title>管理CloudDisk</title>
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="static/css/bootstrap.css"/>
-    <link rel="stylesheet" href="static/css/fileinput.min.css"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/css/fileinput.min.css"/>
 
-    <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="static/js/fileinput.min.js"></script>
-    <script type="text/javascript" src="static/js/locales/zh.js"></script>
-    <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="/static/js/locales/zh.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript">
-        $(function () {
-            //$("#pagesize").get(0).selectedIndex=${pagebean.pagesize/5-1 };
-            $("#fileupload").fileinput({
-                language: 'zh',
-                uploadUrl: '${pageContext.request.contextPath }/uploadfile',
-                //allowedFileExtensions: ['mp4','zip','rar'],//接收的文件后缀
-                //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
-                uploadAsync: true, //默认异步上传
-                showUpload: true, //是否显示上传按钮
-                showRemove: true, //显示移除按钮
-                showPreview: true, //是否显示预览
-                //showCaption:false,//是否显示标题
-                browseClass: "btn btn-primary", //按钮样式    
-                dropZoneEnabled: false,//是否显示拖拽区域
-                //zoomModalHeight:100,
-                //minImageWidth: 50, //图片的最小宽度
-                //minImageHeight: 50,//图片的最小高度
-                //maxImageWidth: 1000,//图片的最大宽度
-                //maxImageHeight: 1000,//图片的最大高度
-                maxFileSize: 150000,//单位为kb，如果为0表示不限制文件大小
-                //minFileCount: 0,
-                maxFileCount: 10, //表示允许同时上传的最大文件个数
-                enctype: 'multipart/form-data',
-                validateInitialCount: true,
-                previewFileIcon: "<i class='glyphicon glyphicon-king'></i>",
-                msgFilesTooMany: "选择上传的文件数量{n} 超过允许的最大数值{m}！"
-            });
-            $("#fileupload").on("fileuploaded", function (event, data, previewId, index) {
-                $("#myModal").modal('hide');
-                window.location.reload();
-            });
 
-            //按钮点击
-            $('.nav li a').click(function () {
-                window.location.href = '${pageContext.request.contextPath }/searchUserFile?filetype=' + $(this).parent().attr("id");
-            });
-
-            $('#' + '${sessionScope.filetype}').addClass('active');
-            $('.pre-scrollable').css('max-height', $(document).height() * 0.81);
-        });
     </script>
 </head>
 <body>
@@ -72,7 +33,7 @@
     <div class="collapse navbar-collapse" id="example-navbar-collapse">
         <ul class="nav navbar-nav navbar-right">
             <c:if test="${user!=null}">
-                <li><a href="javscript:void(0)"><span class="glyphicon glyphicon-user"></span>${user.nickName}</a></li>
+                <li><a href="javscript:void(0)"><span class="glyphicon glyphicon-user"></span>${admin.nickName}</a></li>
             </c:if>
             <li><a href="${pageContext.request.contextPath}/signOut"><span
                     class="glyphicon glyphicon-log-out"></span>退 出</a></li>
@@ -88,196 +49,70 @@
     <div class="row">
         <div class="col-xs-2 col-sm-2 col-lg-1" id="myScrollspy">
             <ul class="nav nav-pills nav-stacked">
-                <li id="all"><a href="javascript:void(0)">全部</a></li>
-                <li id="photos"><a href="javascript:void(0)">图片</a></li>
-                <li id="docs"><a href="javascript:void(0)">文档</a></li>
-                <li id="videos"><a href="javascript:void(0)">视频</a></li>
-                <li id="musics"><a href="javascript:void(0)">音乐</a></li>
-                <li id="others"><a href="javascript:void(0)">其他</a></li>
+                <li id="user"><a href="javascript:void(0)">用户</a></li>
+                <li id="file"><a href="javascript:void(0)">文件</a></li>
             </ul>
         </div>
         <div class="col-xs-10 col-lg-11">
-            <div class="">
-                <div class="row">
-                    <div class="dropdown col-lg-1 col-xs-3">
-                        <button type="button"
-                                class="btn btn-primary btn-sm dropdown-toggle"
-                                id="dropdownMenu1" data-toggle="dropdown">
-                            <span class="glyphicon glyphicon-cloud-upload"></span>上传
-                        </button>
-                        <ul class="dropdown-menu" role="menu"
-                            aria-labelledby="dropdownMenu1">
-                            <li role="presentation"><a class="btn" data-toggle="modal"
-                                                       href="#myModal1"> 文件上传 </a></li>
-                            <li role="presentation"><a class="btn" data-toggle="modal"
-                                                       data-target="#myModal2"> 文件夹上传 </a></li>
-                        </ul>
-                    </div>
-                    <div class="col-lg-1 col-xs-3">
-                        <button type="button" class="btn btn-primary btn-sm">离线下载</button>
-                    </div>
-                    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
-                         aria-labelledby="myModalLabel" aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal"
-                                            aria-hidden="true">×
-                                    </button>
-                                    <h4 class="modal-title" id="myModalLabel">上传文件</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="col-lg-12">
-                                        <div class="form-group">
-                                            <input id="fileupload" name="file" type="file" multiple/>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <!-- <button type="button" class="btn btn-default"
-                                    data-dismiss="modal">关闭</button>
-                                <button type="button" class="btn btn-primary">提交更改</button> -->
-                                </div>
-                            </div>
-                            <!-- /.modal-content -->
-                        </div>
-                        <!-- /.modal-dialog -->
-                    </div>
 
-                </div>
-                <div class="row clearfix pre-scrollable ">
-                    <div class="table-responsive " id="tb">
-                        <table class="table table-hover pre-scrollable">
-                            <thead>
-                            <tr>
-                                <th>文件名</th>
-                                <th>文件大小</th>
-                                <th>修改日期</th>
-                                <th>下载文件</th>
-                                <th>是否共享</th>
-                                <th>操作</th>
-                            <tr>
-                            </thead>
-                            <tbody>
-                            <c:forEach var="c" items="${requestScope.pagebean.list}"
-                                       varStatus="stat">
+            <div class="row clearfix pre-scrollable ">
+                <div class="table-responsive " id="tb">
+                    <table class="table table-hover pre-scrollable">
+                        <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>昵称</th>
+                            <th>电子邮箱</th>
+                            <th>是否会员</th>
+                            <th>操作</th>
+                        <tr>
+                        </thead>
+                        <tbody>
+                        <c:forEach var="user" items="${requestScope.users}"
+                                   varStatus="stat">
                             <tr class="${stat.count%2==0?'success':'warning'}">
-                                <td><a class="btn"
-                                       onclick="openfile('${c.filepath}','${c.filename }')"> <c:set
-                                        var="filetype"
-                                        value="${c.filename.substring(c.filename.lastIndexOf('.')+1,c.filename.length())}"></c:set>
-                                    <c:choose>
-                                        <c:when test="${filetype=='mp4' }">
-                                            <span class="glyphicon glyphicon-hd-video"></span>
-                                        </c:when>
-
-                                        <c:when test="${filetype=='mp3' }">
-                                            <span class="glyphicon glyphicon-play-music"></span>
-                                        </c:when>
-
-                                        <c:when test="${filetype=='jpg'||filetype=='png' }">
-                                            <span class="glyphicon glyphicon-picture"></span>
-                                        </c:when>
-
-                                        <c:when
-                                                test="${filetype=='txt'||filetype=='pdf'||filetype=='doc' }">
-                                            <span class="glyphicon glyphicon-file"></span>
-                                        </c:when>
-                                    </c:choose> ${c.filename }
-                                </a></td>
-                                <td><c:choose>
-                                    <c:when test="${c.filesize>1048576}">
-                                        <fmt:formatNumber type="number"
-                                                          value="${c.filesize/1048576 }" pattern="0.0"
-                                                          maxFractionDigits="1"></fmt:formatNumber>G</c:when>
-                                    <c:when test="${c.filesize>1024}">
-                                        <fmt:formatNumber type="number"
-                                                          value="${c.filesize/1024 }" pattern="0.0"
-                                                          maxFractionDigits="1"></fmt:formatNumber>M</c:when>
-                                    <c:otherwise>
-                                        <fmt:formatNumber type="number" value="${c.filesize}"
-                                                          pattern="0.0"
-                                                          maxFractionDigits="1"></fmt:formatNumber>k</c:otherwise>
-                                </c:choose></td>
-                                <td><fmt:formatDate value="${c.createtime }"
-                                                    pattern="yyyy-MM-dd HH:mm"/></td>
+                                <td><span>${user.userName}</span></td>
+                                <td><span>${user.nickName}</span></td>
+                                <td><span>${user.email}</span></td>
+                                <td><span>${user.isVip}</span></td>
                                 <td>
-                                    <button type="button" class="btn btn-primary btn-xs"
-                                            onclick="downloadfile('${c.id}','${c.filename }')">
-                                        <span class="glyphicon glyphicon-download-alt"></span>下载
+                                    <button type="button" class="btn btn-default btn-xs"
+                                            onclick="void(0)">
+                                        <span class="glyphicon glyphicon-edit"></span>修改
                                     </button>
-                                </td>
-                                <td><select class="form-control input-sm" id="${c.id}"
-                                            onchange="gochange(${pagebean.currentpage},${c.id})">
-                                    <c:if test="${c.canshare==0 }">
-                                        <option value="0">私有</option>
-                                        <option value="1">共享</option>
-                                    </c:if>
-                                    <c:if test="${c.canshare==1 }">
-                                        <option value="1" selected="selected">共享</option>
-                                        <option value="0">私有</option>
-                                    </c:if>
-                                </select></td>
-                                <td>
                                     <button type="button" class="btn btn-danger btn-xs"
-                                            onclick="godelete(${c.id})">
+                                            onclick="godelete(${user.id})">
                                         <span class="glyphicon glyphicon-trash"></span>删除
                                     </button>
                                 </td>
-                            <tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                    </div>
+                            </tr>
+                        </c:forEach>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<script type="text/javascript">
-    function openfile(filepath, filename) {
-        var str = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
-        if ('mp4' == str || 'ogg' == str) {
-            window.location.href = '${pageContext.request.contextPath}/videoPlay?userName=' + filepath + '&filename=' + filename;
-        }
-        else if ('mp3' == str || 'ogg' == str) {
-            window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
-        }
-        else if ('txt' == str || 'doc' == str || 'pdf' == str) {
-            window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
-        }
-        else if ('jpg' == str || 'jpeg' == str || 'png' == str) {
-            window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
-        }
-    };
+    <script type="text/javascript">
+        function godelete(userId) {
+            var r = confirm("确认删除？");
+            if (r == true) {
+                window.location.href = '${pageContext.request.contextPath}/admin/deleteUser?id=' + userId;
+            } else {
+                return false;
+            }
+        };
 
-    function downloadfile(id, filename) {
-        window.location.href = '${pageContext.request.contextPath}/download?id=' + id + '&filename=' + filename;
-    };
-
-    function godelete(fileid) {
-        var r = confirm("确认删除文件？");
-        if (r == true) {
-            window.location.href = '${pageContext.request.contextPath}/deletefile?id=' + fileid;
-        } else {
-            return false;
+        function gochange(userId) {
+            var r = confirm("如果设置共享，您的文件将可以被其他人搜索到");
+            if (r == true) {
+                window.location.href = '${pageContext.request.contextPath}/changeUser?id='+userId;
+            } else {
+                location.reload();
+            }
         }
-    };
-
-    function gochange(currentpage, fileid) {
-
-        var canshare = document.getElementById(fileid).value;
-        var pagesize = ${pagebean.pagesize};
-        var r = confirm("如果设置共享，您的文件将可以被其他人搜索到");
-        if (r == true) {
-            window.location.href = '${pageContext.request.contextPath}/changefilestatus?currentpage=' + currentpage + '&pagesize=' + pagesize + '&id=' + fileid + '&canshare=' + canshare;
-        } else {
-            location.reload();
-        }
-    }
-
-</script>
-    
+    </script>
+        
 </body>
 </html>
 

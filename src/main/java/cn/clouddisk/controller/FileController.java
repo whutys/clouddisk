@@ -2,10 +2,15 @@ package cn.clouddisk.controller;
 
 import cn.clouddisk.entity.MyFile;
 import cn.clouddisk.entity.PageBean;
+import cn.clouddisk.entity.User;
 import cn.clouddisk.service.FileService;
 import cn.clouddisk.service.UserService;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.io.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,19 +24,13 @@ import java.net.URLDecoder;
 import java.util.*;
 
 @Controller
+@PropertySource("classpath:settings.properties")
+@RequestMapping("/jsp")
 public class FileController {
-	private static Properties properties;
-	static {
-		properties = new Properties();
-		try {
-			properties.load(Resources.getResourceAsStream("settings.properties"));
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	private static final String storePath = "E:"+File.separatorChar+properties.getProperty("storePath"); // 存储目录 E:\\BaiduYunDownload
+	@Value("${storePath}")
+	private String storePath; // 存储目录 E:\\BaiduYunDownload
+	@Value("${category}")
+	private String category;
 	@Autowired
 	private UserService userService;
 	@Autowired
@@ -42,7 +41,7 @@ public class FileController {
 		// 判断该用户是否拥有此文件
 		try {
 			String username = fileService.findFilepathById(id);
-			String login_user = (String) request.getSession().getAttribute("user_name");
+			String login_user = ((User) request.getSession().getAttribute("user")).getUserName();
 			String filename = fileService.findFilenameById(id); // 查出文件名
 			if (username != null && login_user.equals(username)) {
 				// 从硬盘上删除文件
@@ -67,23 +66,25 @@ public class FileController {
 	}
 
 	@RequestMapping(value = "/searchUserFile")
-	public String searchUserFile(HttpServletRequest request, PageBean pageBean)
+	public String searchUserFile(HttpServletRequest request, PageBean pageBean,Model model)
 			throws Exception {
 		// 根据用户查找出它所有的文件
 		String filepath;// file表的文件路径就是所属的用户的用户名
 		List<MyFile> list;
-		int countUserFiles = 0;
+		int countUserFiles;
 		try {
-			String username = (String) request.getSession().getAttribute("user_name");
+			User user = (User) request.getSession().getAttribute("user");
 			// session没有用户名说明没有登陆，让他转去主页
-			if (username == null || "".equals(username)) {
+			if (user == null) {
 				return "redirect:/signInPage";
 			}
+			model.addAttribute("user",user);
+			String username = user.getUserName();
 			filepath = username;
 			Map<String, Object> map = new HashMap<>();
 			countUserFiles = fileService.countUserFiles(filepath);
 			map.put("filepath", filepath);
-			String filetype = (String) request.getParameter("filetype");
+			String filetype = request.getParameter("filetype");
 			if (filetype == null) {
 				filetype = (String) request.getSession().getAttribute("filetype");
 				if (filetype == null) {
@@ -92,16 +93,17 @@ public class FileController {
 			}
 			request.getSession().setAttribute("filetype", filetype);
 			List<String> types = null;
+			JSONObject jsonObject = JSON.parseObject(category);
 			if ("others".equals(filetype)) {
 				map.put("others", true);
 				types = new ArrayList<>();
-				List<String> category=new ArrayList<>(Arrays.asList(properties.getProperty("category").split("/")));
-				for (String string : category) {
-					types.addAll(Arrays.asList(properties.getProperty(string).split("/")));
+				//List<String> categoryList=new ArrayList<>(Arrays.asList(category.split("/")));
+				for (String string : jsonObject.keySet()) {
+					types.addAll(Arrays.asList(jsonObject.get(string).toString().split("/")));
 				}
-			} else if ("all".equals(filetype)) {
-			} else {
-				types = new ArrayList<>(Arrays.asList(properties.getProperty(filetype).split("/")));
+			} else if("all".equals(filetype)){}
+			else {
+				types = new ArrayList<>(Arrays.asList(jsonObject.get(filetype).toString().split("/")));
 			}
 			map.put("types", types);
 			list = fileService.getUserFiles(map);
@@ -109,11 +111,11 @@ public class FileController {
 			e.printStackTrace();
 			return "redirect:/signInPage";
 		}
-		Integer isVip = (Integer) request.getAttribute("isVip");
-		if (isVip == null) { // 没有上传文件之前会调用到这里的代码，上传的时候在uploadAction里会添加isvip
-			isVip = userService.isVip(filepath);
-			request.setAttribute("isVip", isVip);
-		}
+//		Integer isVip = (Integer) request.getAttribute("isVip");
+//		if (isVip == null) { // 没有上传文件之前会调用到这里的代码，上传的时候在uploadAction里会添加isvip
+//			isVip = userService.isVip(filepath);
+//			request.setAttribute("isVip", isVip);
+//		}
 		// 拿到每页的数据，每个元素就是一条记录
 		pageBean.setList(list);
 		pageBean.setPagesize(countUserFiles);

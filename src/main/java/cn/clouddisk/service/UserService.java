@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
+
 @Service
 @Transactional
 public class UserService {
@@ -22,7 +24,7 @@ public class UserService {
 		}
 	}
 
-	public String checkUser(User user) throws Exception {
+	public Map<String,Object> checkUser(User user) throws Exception {
 		return userMapper.checkUser(user);
 	}
 
@@ -37,3 +39,5 @@ public class UserService {
 		return userMapper.isVip(user_name);
 	}
 }
+
+

@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>登录页</title>
+<title>管理员登录</title>
 <meta name="description"
 	content="particles.js is a lightweight JavaScript library for creating particles.">
 <meta name="viewport"
@@ -27,8 +27,6 @@
 		</div>
 		<div class="collapse navbar-collapse" id="example-navbar-collapse">
 			<ul class="nav navbar-nav navbar-right">
-				<li><a href="${pageContext.request.contextPath}/registPage"><span
-						class="glyphicon glyphicon-log-in"></span>注册</a></li>
 				<li><a href="${pageContext.request.contextPath}/index.jsp"><span
 						class="glyphicon glyphicon-home"></span>首页</a></li>
 				<li><a href="${pageContext.request.contextPath}/help.jsp"><span
@@ -43,7 +41,7 @@
 					<h2>登录</h2>
 				</div>
 				<form:form class="form-horizontal"
-					action="${pageContext.request.contextPath }/signInForm"
+					action="${pageContext.request.contextPath }/admin/signInForm"
 					modelAttribute="user" method="post">
 					<div class="form-group">
 						<label class="col-lg-3 control-label"></label>

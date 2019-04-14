@@ -5,11 +5,12 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.ComponentScan;
 //import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 
 @SpringBootApplication//(scanBasePackages = {"cn.clouddisk.controller", "cn.clouddisk.service"})
-@MapperScan(basePackages = {"cn.clouddisk.mapper"})
+@MapperScan("cn.clouddisk.mapper")
 //@ComponentScan(basePackages = {"cn.clouddisk.entity"})
 public class Application extends SpringBootServletInitializer {
 

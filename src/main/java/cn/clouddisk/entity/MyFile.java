@@ -1,14 +1,15 @@
 package cn.clouddisk.entity;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
 import java.util.Date;
 
 @Component
+@Scope("prototype")
 public class MyFile implements Serializable{
-	
-	private static final long serialVersionUID = 1L;
+	private static final long SerialVersionUID = 1L;
 	private int id;
 	private String filename;
 	private String filepath;

@@ -4,7 +4,7 @@ spring:
   mvc:
     static-path-pattern: /static/**
     view:
-      prefix: /WEB-INF/jsp/
+      prefix: /WEB-INF/view/
       suffix: .jsp
   http:
     multipart:
@@ -34,6 +34,7 @@ mybatis:
   type-aliases-package: cn.clouddisk.entity
   configuration:
     cache-enabled: true
+    map-underscore-to-camel-case: true
 #debug: true
 #logging:
 #  level:
@@ -41,3 +42,4 @@ mybatis:
 #    org:
 #      springFramework:
 #        web: debug
+#storePath: D:\\BaiduYunDownload

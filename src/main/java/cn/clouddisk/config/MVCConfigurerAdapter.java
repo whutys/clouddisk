@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
-public class MvcConfigurerAdapter extends WebMvcConfigurerAdapter {
+public class MVCConfigurerAdapter extends WebMvcConfigurerAdapter {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/BaiduYunDownload/**").addResourceLocations("file:D:/BaiduYunDownload/");
@@ -29,7 +29,7 @@ public class MvcConfigurerAdapter extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
 //        List<String> excludePatterns = new ArrayList<>();
         registry.addInterceptor(new LoginInterceptor())
-                .addPathPatterns("/**")
-                .excludePathPatterns("/static/**","/signInPage","/registPage","/*.jsp");
+                .addPathPatterns("/searchUserFile", "/vipPlayer")
+                .excludePathPatterns("/signInPage");
     }
 }
