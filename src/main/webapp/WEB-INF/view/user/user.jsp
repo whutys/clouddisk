@@ -21,43 +21,21 @@
     </script>
 </head>
 <body>
-<nav class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target="#example-navbar-collapse">
-            <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
-                class="icon-bar"></span> <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">管理员</a>
-    </div>
-    <div class="collapse navbar-collapse" id="example-navbar-collapse">
-        <ul class="nav navbar-nav navbar-right">
-            <c:if test="${user!=null}">
-                <li><a href="javscript:void(0)"><span class="glyphicon glyphicon-user"></span>${admin.nickName}</a></li>
-            </c:if>
-            <li><a href="${pageContext.request.contextPath}/signOut"><span
-                    class="glyphicon glyphicon-log-out"></span>退 出</a></li>
-            <li><a href="${pageContext.request.contextPath}/index.jsp"><span
-                    class="glyphicon glyphicon-home"></span>首页</a></li>
-            <li><a href="${pageContext.request.contextPath}/help.jsp"><span
-                    class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
-        </ul>
-    </div>
-</nav>
+<%@include file="/head.jsp"%>
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-xs-2 col-sm-2 col-lg-1" id="myScrollspy">
             <ul class="nav nav-pills nav-stacked">
-                <li id="user"><a href="javascript:void(0)">用户</a></li>
+                <li id="user"><a href="/user">用户</a></li>
                 <li id="file"><a href="javascript:void(0)">文件</a></li>
             </ul>
         </div>
-        <div class="col-xs-10 col-lg-11">
-            <div class="btn-group-sm hidden-xs" id="toolbar" role="group">
-                <a class="btn btn-success" onclick=""><span class="glyphicon glyphicon-plus-sign"></span>新增</a>
-                <a class="btn btn-primary" onclick=""><span class="glyphicon glyphicon-edit"></span>修改</a>
-                <a class="btn btn-danger" onclick=""><span class="glyphicon glyphicon-trash"></span>删除</a>
+        <div class="col-xs-10 col-lg-11 col-sm-10">
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" href="${pageContext.request.contextPath}/user/add"><span class="glyphicon glyphicon-plus-sign"></span>新增</a>
+                <a class="btn btn-primary" href="${pageContext.request.contextPath}/user/edit"><span class="glyphicon glyphicon-edit"></span>修改</a>
+                <a class="btn btn-danger" href="${pageContext.request.contextPath}/user/remove"><span class="glyphicon glyphicon-trash"></span>删除</a>
             </div>
             <div class="row clearfix pre-scrollable ">
                 <div class="table-responsive " id="tb">
@@ -67,7 +45,7 @@
                             <th>用户名</th>
                             <th>昵称</th>
                             <th>电子邮箱</th>
-                            <th>是否会员</th>
+                            <th>角色</th>
                             <th>操作</th>
                         <tr>
                         </thead>
@@ -78,7 +56,7 @@
                                 <td><span>${user.username}</span></td>
                                 <td><span>${user.nickname}</span></td>
                                 <td><span>${user.email}</span></td>
-                                <td><span>${user.isVip}</span></td>
+                                <td><span><c:forEach items="${user.roles}" var="role">${role.roleName}</c:forEach> </span></td>
                                 <td>
                                     <button type="button" class="btn btn-default btn-xs"
                                             onclick="edit(${user.id})">

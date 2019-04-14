@@ -5,9 +5,11 @@ import cn.clouddisk.entity.PageBean;
 import cn.clouddisk.entity.User;
 import cn.clouddisk.service.impl.FileService;
 import cn.clouddisk.service.impl.PlayListService;
-import cn.clouddisk.utils.MyUtils;
+import cn.clouddisk.utils.CrawlUtils;
+import cn.clouddisk.utils.ShiroUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -23,7 +25,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.*;
-
+@RequiresUser
 @Controller
 @PropertySource("classpath:settings.properties")
 //@RequestMapping("/jsp")
@@ -46,7 +48,7 @@ public class FileController {
         // 判断该用户是否拥有此文件
         try {
             String username = fileService.findFilepathById(id);
-            String login_user = ((User) request.getSession().getAttribute("user")).getUsername();
+            String login_user = ShiroUtils.getUsername();
             String filename = fileService.findFilenameById(id); // 查出文件名
             if (username != null && login_user.equals(username)) {
                 // 从硬盘上删除文件
@@ -70,22 +72,15 @@ public class FileController {
     }
 
     @RequestMapping(value = "/userHome")
-    public String searchUserFile(HttpServletRequest request, PageBean pageBean, Model model) {
+    public String searchUserFile(HttpServletRequest request, PageBean pageBean) {
         // 根据用户查找出它所有的文件
         String filepath;// file表的文件路径就是所属的用户的用户名
-        List<MyFile> list;
-        int countUserFiles;
+        List<MyFile> files;
         try {
-            User user = (User) request.getSession().getAttribute("user");
-            // session没有用户名说明没有登陆，让他转去主页
-            if (user == null) {
-                return "redirect:/signInPage";
-            }
-            model.addAttribute("user", user);
+            User user =ShiroUtils.getUser();
             String username = user.getUsername();
             filepath = username;
             Map<String, Object> map = new HashMap<>();
-            countUserFiles = fileService.countUserFiles(filepath);
             map.put("filepath", filepath);
             String filetype = request.getParameter("filetype");
             if (filetype == null) {
@@ -108,23 +103,16 @@ public class FileController {
                 types = new ArrayList<>(Arrays.asList(jsonObject.get(filetype).toString().split("/")));
             }
             map.put("types", types);
-            list = fileService.getUserFiles(map);
+            files = fileService.getUserFiles(map);
 
-//            request.getSession().setAttribute("videoName", videoName);
-//            request.getSession().setAttribute();
         } catch (Exception e) {
             e.printStackTrace();
-            return "redirect:/signInPage";
+            return "redirect:/logIn";
         }
-//		Integer isVip = (Integer) request.getAttribute("isVip");
-//		if (isVip == null) { // 没有上传文件之前会调用到这里的代码，上传的时候在uploadAction里会添加isvip
-//			isVip = userService.isVip(filepath);
-//			request.setAttribute("isVip", isVip);
-//		}
         // 拿到每页的数据，每个元素就是一条记录
-        pageBean.setList(list);
-        pageBean.setPagesize(countUserFiles);
-        pageBean.setTotalrecord(countUserFiles);
+        pageBean.setList(files);
+        pageBean.setPagesize(files.size());
+        pageBean.setTotalrecord(files.size());
 
         request.setAttribute("pagebean", pageBean);
         return "userhome";
@@ -150,7 +138,6 @@ public class FileController {
 
         model.addAttribute("pagebean", pageBean);
         // model.addAttribute("searchcontent", pageBean.getSearchcontent());
-
         return "showsearchfiles";
     }
 
@@ -169,8 +156,7 @@ public class FileController {
 
     @RequestMapping("/vipPlayer")
     public String vipAnalysis(HttpSession httpSession, Model model) {
-        User user = (User) httpSession.getAttribute("user");
-        String username = user.getUsername();
+        String username = ShiroUtils.getUsername();
         //播放信息
         Map<String, String> videoInfo = playListService.findVideoInfo(username);
         if (videoInfo == null) {
@@ -189,11 +175,8 @@ public class FileController {
     @ResponseBody
     @GetMapping("/getTitle")
     public String getTitle(HttpSession httpSession, String url) {
-        User user = (User) httpSession.getAttribute("user");
-        String username = null;
-        if (user != null)
-            username = user.getUsername();
-        String videoName = MyUtils.getTitle(url);
+        String username = ShiroUtils.getUsername();
+        String videoName = CrawlUtils.getTitle(url);
 //        httpSession.setAttribute("videoName", videoName);
         playListService.changeVideoInfo(username, videoName, url);
         return videoName;
@@ -202,7 +185,7 @@ public class FileController {
     @ResponseBody
     @GetMapping("/getVideoItem")
     public Map<String, String> getVideoItem(String url) {
-        return MyUtils.crawlVideo(url);
+        return CrawlUtils.crawlVideo(url);
     }
 
 }

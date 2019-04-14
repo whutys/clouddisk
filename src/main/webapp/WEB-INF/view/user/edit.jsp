@@ -22,30 +22,7 @@
     </script>
 </head>
 <body>
-<nav class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target="#example-navbar-collapse">
-            <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
-                class="icon-bar"></span> <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">管理员</a>
-    </div>
-    <div class="collapse navbar-collapse" id="example-navbar-collapse">
-        <ul class="nav navbar-nav navbar-right">
-            <c:if test="${user!=null}">
-                <li><a href="javscript:void(0)"><span class="glyphicon glyphicon-user"></span>${admin.nickName}</a></li>
-            </c:if>
-            <li><a href="${pageContext.request.contextPath}/signOut"><span
-                    class="glyphicon glyphicon-log-out"></span>退 出</a></li>
-            <li><a href="${pageContext.request.contextPath}/index.jsp"><span
-                    class="glyphicon glyphicon-home"></span>首页</a></li>
-            <li><a href="${pageContext.request.contextPath}/help.jsp"><span
-                    class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
-        </ul>
-    </div>
-</nav>
-
+<%@include file="/head.jsp"%>
 <div class="container-fluid">
     <div class="row">
         <div class="col-xs-10 col-lg-11">
@@ -90,16 +67,10 @@
                     <div class="col-lg-9 col-lg-offset-3">
                         <button type="submit" class="btn btn-primary" name="submit"
                                 value="submit">提交</button>
-                        <button type="button" class="btn btn-info" id="resetBtn">重置</button>
+                        <button type="button" class="btn btn-info" id="cancelBtn" href="${pageContext.request.contextPath}/user">取消</button>
                     </div>
                 </div>
             </form:form>
-        </div>
-        <div class="col-xs-2 col-sm-2 col-lg-1" id="myScrollspy">
-            <ul class="nav nav-pills nav-stacked">
-                <li id="user"><a href="javascript:void(0)">用户</a></li>
-                <li id="file"><a href="javascript:void(0)">文件</a></li>
-            </ul>
         </div>
         </div>
     </div>

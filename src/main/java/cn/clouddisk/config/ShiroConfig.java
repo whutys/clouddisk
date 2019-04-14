@@ -2,8 +2,14 @@ package cn.clouddisk.config;
 
 import cn.clouddisk.shiro.realm.UserRealm;
 import cn.clouddisk.shiro.web.filter.LogoutFilter;
+import cn.clouddisk.utils.StringUtils;
+import net.sf.ehcache.CacheManager;
+import org.apache.commons.io.IOUtils;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.codec.Base64;
+import org.apache.shiro.config.ConfigurationException;
+import org.apache.shiro.io.ResourceUtils;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.mgt.RememberMeManager;
@@ -21,11 +27,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Configuration
 public class ShiroConfig {
+    @Value("${shiro.user.loginUrl}")
+    private String loginUrl;
+    @Value("${shiro.user.indexUrl}")
+    private String indexUrl;
+    @Value("${shiro.user.unauthorizedUrl}")
+    private String unauthorizedUrl;
     @Value("${shiro.session.expireTime}")
     private int expireTime;
     @Value("${shiro.session.validationInterval}")
@@ -34,20 +49,17 @@ public class ShiroConfig {
     private String domain;
     @Value("${shiro.cookie.path}")
     private String path;
-    @Value("${shiro.user.loginUrl}")
-    private String loginUrl;
-    @Value("${shiro.user.indexUrl}")
-    private String indexUrl;
     @Value("${shiro.cookie.httpOnly}")
     private boolean httpOnly;
     @Value("${shiro.cookie.maxAge}")
     private int maxAge;
 
-    public LogoutFilter logoutFilter(){
+    public LogoutFilter logoutFilter() {
         LogoutFilter logoutFilter = new LogoutFilter();
         logoutFilter.setLoginUrl(loginUrl);
         return logoutFilter;
     }
+
     /**
      * shiro过滤器配置
      */
@@ -57,16 +69,18 @@ public class ShiroConfig {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         shiroFilterFactoryBean.setLoginUrl(loginUrl);
         shiroFilterFactoryBean.setSuccessUrl(indexUrl);
-        shiroFilterFactoryBean.setUnauthorizedUrl("/403");
+        shiroFilterFactoryBean.setUnauthorizedUrl(unauthorizedUrl);
         Map<String, String> filterChainDefinitionMap = new LinkedHashMap<>();
         filterChainDefinitionMap.put("/static/**", "anon");
+        filterChainDefinitionMap.put("/", "anon");
         filterChainDefinitionMap.put("/signOut", "logout");
+        filterChainDefinitionMap.put(loginUrl, "anon");
 //        filterChainDefinitionMap.put("/**","authc");
 
         /*过滤器*/
         Map<String, Filter> filter = new LinkedHashMap<>();
 //        filter.put("onlineSession",onlineSessionFilter());
-        filter.put("logout",logoutFilter());
+        filter.put("logout", logoutFilter());
         shiroFilterFactoryBean.setFilters(filter);
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
@@ -84,15 +98,43 @@ public class ShiroConfig {
         subjectDAO.setSessionStorageEvaluator(defaultSessionStorageEvaluator);
         securityManager.setSubjectDAO(subjectDAO);
 //        自定义缓存
-//        securityManager.setCacheManager(new CustomCacheManager());
+        securityManager.setCacheManager(ehCacheManager());
         securityManager.setRememberMeManager(rememberMeManager());
         return securityManager;
     }
 
     @Bean
+    public EhCacheManager ehCacheManager() {
+        CacheManager cacheManager = CacheManager.getCacheManager("clouddisk");
+        EhCacheManager ehCacheManager = new EhCacheManager();
+        if (StringUtils.isNull(cacheManager)) {
+            ehCacheManager.setCacheManager(new CacheManager(getCacheManagerConfigFileInputStream()));
+            return ehCacheManager;
+        } else {
+            ehCacheManager.setCacheManager(cacheManager);
+            return ehCacheManager;
+        }
+    }
+
+    protected InputStream getCacheManagerConfigFileInputStream() {
+        String configFile = "classpath:ehcache/ehcache-shiro.xml";
+        InputStream inputStream = null;
+        try {
+            inputStream = ResourceUtils.getInputStreamForPath(configFile);
+            byte[] bytes = IOUtils.toByteArray(inputStream);
+            InputStream in = new ByteArrayInputStream(bytes);
+            return in;
+        } catch (IOException e) {
+            throw new ConfigurationException("Unable to obtain input stream for cacheManagerConfigFile [" + configFile + "[", e);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+        }
+    }
+
+    @Bean
     public UserRealm userRealm() {
         UserRealm userRealm = new UserRealm();
-//        userRealm.setCredentialsMatcher(hashedCredentialsMatcher());
+        userRealm.setCredentialsMatcher(hashedCredentialsMatcher());
         return userRealm;
     }
 
@@ -104,6 +146,7 @@ public class ShiroConfig {
         HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
         hashedCredentialsMatcher.setHashAlgorithmName("md5");
         hashedCredentialsMatcher.setHashIterations(3);
+//        hashedCredentialsMatcher.setStoredCredentialsHexEncoded(true);//默认
         return hashedCredentialsMatcher;
     }
 
@@ -139,7 +182,7 @@ public class ShiroConfig {
      * 生命周期管理
      */
     @Bean
-    public LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
+    public static LifecycleBeanPostProcessor lifecycleBeanPostProcessor() {
         return new LifecycleBeanPostProcessor();
     }
 

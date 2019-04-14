@@ -1,9 +1,11 @@
 package cn.clouddisk.controller;
 
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.impl.UserService;
-import cn.clouddisk.shiro.service.PasswordService;
+import cn.clouddisk.service.impl.UserRoleServiceImpl;
+import cn.clouddisk.service.impl.RoleServiceImpl;
+import cn.clouddisk.service.impl.UserServiceImpl;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,23 +13,26 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RequiresRoles("admin")
 @Controller
 @RequestMapping("/user")
 public class UserController {
 
-    private UserService userService;
-    private PasswordService passwordService;
+    private UserServiceImpl userService;
+    private RoleServiceImpl roleService;
+    private UserRoleServiceImpl userRoleService;
 
     @Autowired
-    public UserController(UserService userService,PasswordService passwordService) {
+    public UserController(UserServiceImpl userService, RoleServiceImpl roleService,UserRoleServiceImpl userRoleService) {
         this.userService = userService;
-        this.passwordService=passwordService;
+        this.roleService = roleService;
+        this.userRoleService=userRoleService;
     }
     @RequiresPermissions("user:view")
     @GetMapping()
     public String user(User user, Model model){
         List<User> list = userService.selectUserList(user);
+        list.forEach((each)->each.setRoles(roleService.selectRoleByUserId(each.getId())));
         model.addAttribute("users", list);
         return "user/user";
     }
@@ -36,39 +41,36 @@ public class UserController {
     public String list(User user, Model model){
         List<User> list = userService.selectUserList(user);
         model.addAttribute("users", list);
-        return "/admin/users";
+        return "/user/user";
     }
     @GetMapping("/add")
-    @ResponseBody
-    public String add(){
+    public String add(User user){
         return "/user/add";
     }
+
     @RequiresPermissions("user:add")
     @PostMapping("/add")
-    @ResponseBody
-    public String addSave(User user){
-        user.setPassword(passwordService.encryptPassword(user.getPassword(),"whutys",3));
-        userService.insertUser(user);
-        return null;
+    public String addSave(User user,String username){
+        int userId = userService.insertUser(user);
+        userRoleService.insertUserRoleByUserId(userService.selectUserByName(username).getId());
+        return "redirect:/user";
     }
     @RequiresPermissions("user:remove")
     @GetMapping("/remove/{userId}")
-    @ResponseBody
     public String remove(@PathVariable("userId") int userId){
         userService.deleteUserById(userId);
-        return null;
+        return "redirect:/user";
     }
     @GetMapping("/edit/{userId}")
     public String edit(@PathVariable("userId") int userId, ModelMap modelMap){
         User user = userService.selectUserById(userId);
-        user.setPassword("");
+        user.setPassword(null);
         modelMap.put("user", user);
         return "/user/edit";
     }
     @RequiresPermissions("user:edit")
     @PostMapping("/edit")
     public String editSave(User user){
-        user.setPassword(passwordService.encryptPassword(user.getPassword(),"whutys",3));
         userService.updateUser(user);
         return "redirect:/user";
     }

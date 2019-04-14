@@ -2,10 +2,13 @@ server:
   port: 80
   session:
     timeout: 3600
+  tomcat:
+    uri-encoding: utf-8
+    max-threads: 300
+    min-spare-threads: 30
 spring:
   application:
     name: clouddisk
-
   mvc:
     static-path-pattern: /static/**
     view:
@@ -50,11 +53,12 @@ mybatis:
 #    org:
 #      springFramework:
 #        web: debug
-#storePath: D:\\BaiduYunDownload
+storePath: D:\\BaiduYunDownload
 shiro:
   user:
-    loginUrl: /signInForm
+    loginUrl: /logIn
     indexUrl: /userHome
+    unauthorizedUrl: /unauth
   cookie:
     domain:
     path: /

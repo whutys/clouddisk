@@ -43,27 +43,7 @@
     </script>
 </head>
 <body>
-<nav class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target="#example-navbar-collapse">
-            <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
-                class="icon-bar"></span> <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">410云盘</a>
-    </div>
-    <div class="collapse navbar-collapse" id="example-navbar-collapse">
-        <ul class="nav navbar-nav navbar-right">
-            <li><a
-                    href="${pageContext.request.contextPath}/autoSignIn?user_name=${user.username}"><span
-                    class="glyphicon glyphicon-user"></span>我的主页</a></li>
-            <li><a href="${pageContext.request.contextPath}/index.jsp"><span
-                    class="glyphicon glyphicon-home"></span>首页</a></li>
-            <li><a href="${pageContext.request.contextPath}/help.jsp"><span
-                    class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
-        </ul>
-    </div>
-</nav>
+<%@include file="/head.jsp"%>
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
