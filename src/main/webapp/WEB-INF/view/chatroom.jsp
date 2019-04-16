@@ -8,7 +8,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>工艺410共享云盘</title>
+    <title>聊天室</title>
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0, user-scalable=no">
 
@@ -21,15 +21,15 @@
 <%@include file="/head.jsp" %>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-2 col-xs-5">【用户】："${fromUser}"</div>
-        <div class="col-lg-1 col-xs-2" id="openSocket"><a href="#" onclick="openSocket()">上线</a></div>
-        <div class="col-lg-1 col-xs-2" id="closeSocket" style="display: none"><a href="#" onclick="closeSocket()">下线</a>
+        <div class="col-lg-2 col-sm-5 col-xs-5">【用户】："${fromUser}"</div>
+        <div class="col-lg-1 col-sm-2 col-xs-2" id="openSocket"><a href="#" onclick="openSocket()">上线</a></div>
+        <div class="col-lg-1 col-sm-2 col-xs-2" id="closeSocket" style="display: none"><a href="#" onclick="closeSocket()">下线</a>
         </div>
     </div>
     <br>
-    <div class="row col-lg-12 col-sm-12 col-xs-12">
+    <div class="row">
         <div class="col-lg-4 col-sm-3 col-xs-2">
-            <div>在线用户</div>
+            <span>在线用户</span>
             <ul id="userList" class="nav nav-pills nav-stacked">
             </ul>
         </div>
@@ -47,9 +47,6 @@
         </div>
     </div>
 </div>
-<nav class="navbar navbar-default navbar-fixed-bottom">
-    <div class="text-center">Copyright ©工艺410</div>
-</nav>
 <script>
     var webSocket;
     var name = '${fromUser}';

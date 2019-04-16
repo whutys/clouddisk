@@ -46,7 +46,7 @@
 </div>
 
 <nav class="navbar navbar-default navbar-fixed-bottom">
-    <div class="text-center">Copyright ©工艺410</div>
+    <div class="container text-center">Copyright ©工艺410</div>
 </nav>
 </body>
 </html>
