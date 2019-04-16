@@ -23,7 +23,7 @@ spring:
     encoding:
       charset: UTF-8
   messages:
-    basename: i18n/messages, i18n/messages_zh
+    basename: i18n/messages_en_US, i18n/messages_zh_CN
    #配置数据源
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
@@ -53,7 +53,7 @@ mybatis:
 #    org:
 #      springFramework:
 #        web: debug
-storePath: D:\\BaiduYunDownload
+storePath: E:/BaiduYunDownload/ #本地资源路径必须以/结尾
 shiro:
   user:
     loginUrl: /logIn

@@ -1,6 +1,7 @@
 package cn.clouddisk.config;
 
 import cn.clouddisk.interceptor.LoginInterceptor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -13,9 +14,11 @@ import java.util.List;
 
 @Configuration
 public class MvcConfigurerAdapter extends WebMvcConfigurerAdapter {
+    @Value("${storePath}")
+    private String storePath;
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/BaiduYunDownload/**").addResourceLocations("file:D:/BaiduYunDownload/");
+        registry.addResourceHandler("/fileDir/**").addResourceLocations("file:"+storePath);
     }
 
     @Override

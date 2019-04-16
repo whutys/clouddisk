@@ -142,14 +142,14 @@ public class FileController {
     }
 
     @RequestMapping("/videoPlay")
-    public String videoPlay(String userName, String filename, Model model) {
+    public String videoPlay(String username, String filename, Model model) {
         try {
             filename = URLDecoder.decode(filename, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         model.addAttribute("url",
-                File.separator + storePath.substring(storePath.indexOf(File.separatorChar) + 1) + File.separator + userName + File.separator + filename);
+                 "\\fileDir\\" +  username + File.separator + filename);
         model.addAttribute("filename", filename);
         return "videoplay";
     }

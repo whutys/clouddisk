@@ -1,7 +1,7 @@
 package cn.clouddisk.controller;
 
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.impl.UserServiceImpl;
+import cn.clouddisk.service.IUserService;
 import cn.clouddisk.utils.ShiroUtils;
 import cn.clouddisk.utils.StringUtils;
 import com.alibaba.fastjson.JSON;
@@ -29,22 +29,22 @@ import java.util.Map;
 @PropertySource("classpath:settings.properties")
 //@RequestMapping("/jsp")
 public class LogInController {
-    private UserServiceImpl userServiceImpl;
+    private IUserService userService;
 
     @Autowired
-    public LogInController(UserServiceImpl userServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
+    public LogInController(IUserService userService) {
+        this.userService = userService;
     }
 
     @Value("${storePath}")
-    String path;
+    String fileDir;
 
     @ResponseBody
     @RequestMapping("test")
     public String test(Map<String, Object> model) {
 //        model.put("time", new Date());
 //        model.put("message", "message");
-        User admin1 = userServiceImpl.selectUserByName("admin1");
+        User admin1 = userService.selectUserByName("admin1");
         return admin1.getPassword();
     }
 
@@ -100,8 +100,8 @@ public class LogInController {
                 model.addAttribute("inviteCodeError", "邀请码不正确");
             } else {
                 try {
-                    userServiceImpl.insertUser(user); // 如果用户已注册 下层的service会抛出异常
-                    new File(path + File.separator + user.getUsername()).mkdirs();
+                    userService.insertUser(user); // 如果用户已注册 下层的service会抛出异常
+                    new File(fileDir + user.getUsername()).mkdirs();
                     return "redirect:/logIn";
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -120,7 +120,7 @@ public class LogInController {
     @RequestMapping("/checkUserName")
     public JSONObject checkUserName(String userName) {
         Map<String, Boolean> map = new HashMap<>();
-        map.put("valid", userServiceImpl.selectUserByName(userName) == null);
+        map.put("valid", userService.selectUserByName(userName) == null);
         return JSONObject.parseObject(JSON.toJSONString(map));
     }
 

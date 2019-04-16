@@ -21,6 +21,8 @@
                 <ul class="dropdown-menu">
                     <li><a href="${pageContext.request.contextPath}/vipPlayer">Vip视频解析</a></li>
                     <li class="divider"></li>
+                    <li><a href="${pageContext.request.contextPath}/chat">聊天室</a></li>
+                    <li class="divider"></li>
                     <li><a href="#">其他功能</a></li>
                     <li class="divider"></li>
                     <li><a href="#">待加入</a></li>

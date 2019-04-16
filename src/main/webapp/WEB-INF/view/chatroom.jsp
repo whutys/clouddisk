@@ -2,7 +2,7 @@
          pageEncoding="UTF-8" %>
 <%
     String path = request.getContextPath();
-    String basePath=request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+path+"/";
+    String basePath = request.getServerName() + ":" + request.getServerPort() + path + "/";
 %>
 <!DOCTYPE html>
 <html>
@@ -18,111 +18,150 @@
 
 </head>
 <body>
-<nav class="navbar navbar-default" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse"
-                data-target="#example-navbar-collapse">
-            <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
-                class="icon-bar"></span> <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="#">410云盘</a>
+<%@include file="/head.jsp" %>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-2 col-xs-5">【用户】："${fromUser}"</div>
+        <div class="col-lg-1 col-xs-2" id="openSocket"><a href="#" onclick="openSocket()">上线</a></div>
+        <div class="col-lg-1 col-xs-2" id="closeSocket" style="display: none"><a href="#" onclick="closeSocket()">下线</a>
+        </div>
     </div>
-    <div class="collapse navbar-collapse" id="example-navbar-collapse">
-        <ul class="nav navbar-nav navbar-right">
-            <li class="dropdown">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                    工具
-                    <b class="caret"></b>
-                </a>
-                <ul class="dropdown-menu">
-                    <li><a href="${pageContext.request.contextPath}/vipPlayer">Vip视频解析</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">其他功能</a></li>
-                    <li class="divider"></li>
-                    <li><a href="#">待加入</a></li>
-                </ul>
-            </li>
-            <li><a href="${pageContext.request.contextPath}/signInPage"><span
-                    class="glyphicon glyphicon-log-in"></span>登录</a></li>
-            <li><a href="${pageContext.request.contextPath}/registPage"><span
-                    class="glyphicon glyphicon-log-in"></span>注册</a></li>
-            <li><a
-                    href="${pageContext.request.contextPath}/autoSignIn?user_name=${user_name}"><span
-                    class="glyphicon glyphicon-user"></span>我的主页</a></li>
-            <li><a href="${pageContext.request.contextPath}/help.jsp"><span
-                    class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
-            <li><a href="${pageContext.request.contextPath}/admin"><span
-                    class="glyphicon glyphicon-info-sign"></span>管理员</a></li>
-        </ul>
-    </div>
-</nav>
+    <br>
+    <div class="row col-lg-12 col-sm-12 col-xs-12">
+        <div class="col-lg-4 col-sm-3 col-xs-2">
+            <div>在线用户</div>
+            <ul id="userList" class="nav nav-pills nav-stacked">
+            </ul>
+        </div>
+        <div class="col-lg-8 col-sm-9 col-xs-10">
+            <span>【发送给】：<span id="toUser"></span></span>
+            <div class="panel-body" data-spy="scroll" data-target="#navbar-example" data-offset="280"
+                 style="height: 280px">
+                <pre id="message" style="height:100%;"></pre>
+            </div>
 
-<div class="container">
-    <div style="padding: 100px 0px 10px;">
-        <div class="col-lg-8 col-lg-offset-3">
-            <form action="searchfile" method="post" class="form-horizontal"
-                  role="form">
-                <div class="row">
-                    <div class="col-lg-6 col-lg-offset-1">
-                        <div class="input-group">
-                            <h2>输入关键词搜索 !</h2>
-                        </div>
-                    </div>
-                    <br> <br> <br> <br>
-                    <div class="col-lg-8 ">
-                        <div class="input-group">
-                            <input type="text" class="form-control" name="searchcontent">
-                            <span class="input-group-btn">
-									<button class="btn btn-primary" type="button"
-                                            onclick="document.forms[0].submit()">搜索</button>
-								</span>
-                        </div>
-                        <!-- /input-group -->
-                    </div>
-                    <!-- /.col-lg-6 -->
-                </div>
-                <!-- /.row -->
-            </form>
+            <div id="message_container" class="input-group" style="display: none">
+                <input id="contentText" type="text" class="form-control">
+                <span class="input-group-addon btn btn-default" onclick="sendMessage()">发送消息</span>
+            </div>
         </div>
     </div>
 </div>
-
 <nav class="navbar navbar-default navbar-fixed-bottom">
     <div class="text-center">Copyright ©工艺410</div>
 </nav>
 <script>
-    var socket;
-    if (typeof(WebSocket) === "undefined") {
-        console.log("您的浏览器不支持WebSocket");
-    } else {
-        console.log("您的浏览器支持WebSocket");
-        //实现化WebSocket对象，指定要连接的服务器地址与端口  建立连接
-        //等同于socket = new WebSocket("ws://localhost:8083/checkcentersys/websocket/20");
-        socket = new WebSocket("${basePath}websocket/${cid}".replace("http", "ws"));
-        //打开事件
-        socket.onopen = function () {
-            console.log("Socket 已打开");
-            //socket.send("这是来自客户端的消息" + location.href + new Date());
-        };
-        //获得消息事件
-        socket.onmessage = function (msg) {
-            console.log(msg.data);
-            //发现消息进入    开始处理前端触发逻辑
-        };
-        //关闭事件
-        socket.onclose = function () {
-            console.log("Socket已关闭");
-        };
-        //发生了错误事件
-        socket.onerror = function () {
-            alert("Socket发生了错误");
-            //此时可以尝试刷新页面
+    var webSocket;
+    var name = '${fromUser}';
+    $(document).ready(function () {
+//        join();
+    });
+
+    /**
+     * Connecting to socket
+     */
+    function join() {
+        // Checking person name
+//        if ($('#fromUser').val().trim().length <= 0) {
+//            alert('Enter your name');
+//        } else {
+//            name = $('#fromUser').val().trim();
+        $('#openSocket').fadeOut(1000, function () {
+            // opening socket connection
+            openSocket();
+        });
+//        };
+        return false;
+    }
+
+    function openSocket() {
+        if (typeof(WebSocket) === "undefined") {
+            console.log("您的浏览器不支持WebSocket");
+        } else {
+            if (webSocket !== undefined && webSocket.readyState !== WebSocket.CLOSED) {
+                return;
+            }
+            var wsUrl = '';
+            if (window.location.protocol === 'http:') {
+                wsUrl = 'ws://<%=basePath%>chat/' + name;
+            } else {
+                wsUrl = 'wss://<%=basePath%>chat/' + name;
+            }
+            console.log(wsUrl);
+            webSocket = new WebSocket(wsUrl);
+            //打开事件
+            webSocket.onopen = function (event) {
+                console.log("Socket 已打开");
+                $('#openSocket').hide();
+                $('#closeSocket').show();
+                $('#message_container').show();
+//                showUser(event.data);
+//                if (event.data === undefined)
+//                    return;
+//                webSocket.send("这是来自客户端的消息" + location.href + new Date());
+            };
+            webSocket.onmessage = function (msg) {
+                console.log(msg.data);
+                parseMessage(msg.data);
+            };
+            webSocket.onclose = function () {
+                console.log("Socket已关闭");
+                $('#closeSocket').hide(500);
+                $('#openSocket').show(500);
+                $('ul[id=userList]').find("li").remove();
+            };
+            webSocket.onerror = function () {
+                alert("Socket发生了错误");
+            }
         }
-        //离开页面时，关闭socket
-        //jquery1.8中已经被废弃，3.0中已经移除
-        // $(window).unload(function(){
-        //     socket.close();
-        //});
+    }
+
+    function parseMessage(message) {
+        var jObj = $.parseJSON(message);
+        var flag = jObj.flag;
+        if (flag === 'message')
+            $("#message").append('<p>' + jObj.timestamp + '| ' + jObj.fromUser + ':<br>' + jObj.contentText + '</p>');
+        else {
+            var userList = jObj.userList;
+            if (flag === 'addUser') {
+                $.each(userList, function (i) {
+                    console.log(userList[i]);
+                    $("#userList").append('<li id="' + userList[i] + '">' + userList[i] + '<button class="btn" onclick="sendMessageTo(\'' + userList[i] + '\')" > 聊天 </button></li>');
+                });
+            } else if (flag === "removeUser") {
+                $.each(userList, function (i) {
+                    console.log(userList[i]);
+                    $("ul li[id=" + userList[i] + "]").remove();
+                });
+            }
+        }
+    }
+
+    function sendMessage() {
+        if (typeof(WebSocket) === "undefined") {
+            console.log("您的浏览器不支持WebSocket");
+        } else {
+            var toUser = $("#toUser").text();
+            if (toUser===''){
+                alert("请先选择聊天对象");
+                return;
+            }
+            var timestamp = new Date().toLocaleString();
+            var contentText = $("#contentText").val();
+//            console.log('[{"toUser":"' + $("#toUser").val() + '","contentText":"' + $("#contentText").val() + '"}]');
+            $("#message").append('<p>' + timestamp + '| 我:<br>' + contentText + '</p>');
+            webSocket.send('[{"toUser":"' + toUser + '","contentText":"' + contentText + '","timestamp":"' + timestamp + '","flag":"message"}]'
+            )
+        }
+    }
+
+    function sendMessageTo(toUser) {
+        console.log(toUser);
+        $("#toUser").text(toUser);
+    }
+
+    function closeSocket() {
+        webSocket.close();
     }
 </script>
 </body>
