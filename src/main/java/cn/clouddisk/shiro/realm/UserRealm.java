@@ -1,7 +1,7 @@
 package cn.clouddisk.shiro.realm;
 
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.impl.PermService;
+import cn.clouddisk.service.impl.PermServiceImpl;
 import cn.clouddisk.service.impl.RoleServiceImpl;
 import cn.clouddisk.shiro.service.LoginService;
 import cn.clouddisk.shiro.web.exception.user.CaptchaException;
@@ -25,7 +25,7 @@ public class UserRealm extends AuthorizingRealm {
     @Autowired
     private RoleServiceImpl roleServiceImpl;
     @Autowired
-    private PermService permService;
+    private PermServiceImpl permServiceImpl;
     @Autowired
     private LoginService loginService;
 
@@ -44,7 +44,7 @@ public class UserRealm extends AuthorizingRealm {
             info.addRole("admin");
             info.addStringPermission("*:*");
         } else {
-            perms = permService.selectPermKeysByUserId(user.getId());
+            perms = permServiceImpl.selectPermKeysByUserId(user.getId());
             roles = roleServiceImpl.selectRoleKeysByUserId(user.getId());
             info.addRoles(roles);
             info.addStringPermissions(perms);

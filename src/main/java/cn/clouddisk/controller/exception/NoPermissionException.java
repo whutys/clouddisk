@@ -8,15 +8,17 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @ControllerAdvice
-public class NopermissionException {
-    private static final Logger log=LoggerFactory.getLogger(NopermissionException.class);
+public class NoPermissionException {
+    private static final Logger log = LoggerFactory.getLogger(NoPermissionException.class);
+
     @ExceptionHandler(UnauthorizedException.class)
-    public String handleShiroException(Exception e){
+    public String handleShiroException(Exception e) {
         log.info(e.getMessage());
         return "redirect:/unauth";
     }
+
     @ExceptionHandler(AuthorizationException.class)
-    public String AuthorizationException(Exception e){
+    public String AuthorizationException(Exception e) {
         log.info(e.getMessage());
         return "redirect:/unauth";
     }

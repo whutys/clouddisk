@@ -1,10 +1,10 @@
 package cn.clouddisk.controller;
 
-import cn.clouddisk.entity.MyFile;
+import cn.clouddisk.entity.UserFile;
 import cn.clouddisk.entity.PageBean;
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.impl.FileService;
-import cn.clouddisk.service.impl.PlayListService;
+import cn.clouddisk.service.impl.FileServiceImpl;
+import cn.clouddisk.service.impl.PlayListServiceImpl;
 import cn.clouddisk.utils.CrawlUtils;
 import cn.clouddisk.utils.ShiroUtils;
 import com.alibaba.fastjson.JSON;
@@ -30,16 +30,16 @@ import java.util.*;
 @PropertySource("classpath:settings.properties")
 //@RequestMapping("/jsp")
 public class FileController {
-    @Value("${storePath}")
+    @Value("${fileDir}")
     private String storePath; // 存储目录 E:\\BaiduYunDownload
     @Value("${category}")
     private String category;
-    private final FileService fileService;
-    private final PlayListService playListService;
+    private final FileServiceImpl fileServiceImpl;
+    private final PlayListServiceImpl playListService;
 
     @Autowired
-    public FileController(FileService fileService, PlayListService playListService) {
-        this.fileService = fileService;
+    public FileController(FileServiceImpl fileServiceImpl, PlayListServiceImpl playListService) {
+        this.fileServiceImpl = fileServiceImpl;
         this.playListService = playListService;
     }
 
@@ -47,16 +47,16 @@ public class FileController {
     public String deleteFile(HttpServletRequest request, int id) {
         // 判断该用户是否拥有此文件
         try {
-            String username = fileService.findFilepathById(id);
+            String username = fileServiceImpl.findFileById(id).getFilepath();
             String login_user = ShiroUtils.getUsername();
-            String filename = fileService.findFilenameById(id); // 查出文件名
+            String filename = fileServiceImpl.findFileById(id).getFilename(); // 查出文件名
             if (username != null && login_user.equals(username)) {
                 // 从硬盘上删除文件
                 String storepath = storePath + File.separator + login_user + File.separator + filename;
                 System.out.println(storepath);
                 File file = new File(storepath);
                 if (file.exists() && file.delete()) {
-                    fileService.deleteFileById(id); // 删除数据库的该文件记录
+                    fileServiceImpl.deleteFileById(id); // 删除数据库的该文件记录
                 }
                 return "redirect:/userHome";
             } else { // 不通过，可能是人为篡改数据，转发至全局消息页面
@@ -75,7 +75,7 @@ public class FileController {
     public String searchUserFile(HttpServletRequest request, PageBean pageBean) {
         // 根据用户查找出它所有的文件
         String filepath;// file表的文件路径就是所属的用户的用户名
-        List<MyFile> files;
+        List<UserFile> files;
         try {
             User user =ShiroUtils.getUser();
             String username = user.getUsername();
@@ -103,7 +103,7 @@ public class FileController {
                 types = new ArrayList<>(Arrays.asList(jsonObject.get(filetype).toString().split("/")));
             }
             map.put("types", types);
-            files = fileService.getUserFiles(map);
+            files = fileServiceImpl.getUserFiles(map);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -120,13 +120,13 @@ public class FileController {
 
     @RequestMapping("/searchfile")
     public String searchFile(Model model, PageBean pageBean) {
-        List<MyFile> list;
+        List<UserFile> list;
         try {
             if (pageBean.getPagesize() == 0) {
                 pageBean.setPagesize(5);
             }
-            list = fileService.getAllFiles(pageBean);
-            pageBean.setTotalrecord(fileService.countShareFiles(pageBean.getSearchcontent()));
+            list = fileServiceImpl.getAllFiles(pageBean);
+            pageBean.setTotalrecord(fileServiceImpl.countShareFiles(pageBean.getSearchcontent()));
         } catch (Exception e) {
             e.printStackTrace();
             return "redirect:/index.jsp";

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 @Service
-public class PermService implements IPermService {
+public class PermServiceImpl implements IPermService {
     @Autowired
     private PermMapper permMapper;
     @Override

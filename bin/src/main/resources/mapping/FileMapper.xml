@@ -20,7 +20,7 @@
     <!-- 分页查找所有和搜索文字匹配的文件 -->
     <select id="getAllFiles"
             parameterType="cn.clouddisk.entity.PageBean"
-            resultType="cn.clouddisk.entity.MyFile">
+            resultType="cn.clouddisk.entity.UserFile">
 		SELECT id,filename,filepath,filesize,createtime,canshare
 		FROM file WHERE
 		canshare=1 AND filename LIKE '%${searchcontent}%' LIMIT
@@ -33,7 +33,7 @@
         filepath=#{filepath} LIMIT #{startindex},#{pagesize} </select> -->
 
     <select id="getUserFiles" parameterType="java.util.Map"
-            resultType="cn.clouddisk.entity.MyFile">
+            resultType="cn.clouddisk.entity.UserFile">
         SELECT * FROM file
         <trim prefix="where" prefixOverrides="and">
             <if test="filepath!=null">AND filepath=#{filepath}</if>
@@ -86,7 +86,7 @@
 
     <!-- 把用户上传的文件信息写入数据库 -->
     <insert id="insertFile"
-            parameterType="cn.clouddisk.entity.MyFile">
+            parameterType="cn.clouddisk.entity.UserFile">
         <selectKey keyProperty="id" order="AFTER"
                    resultType="java.lang.Integer">
             SELECT LAST_INSERT_ID()
@@ -96,7 +96,7 @@
     </insert>
     <!-- 根据文件id更新文件是否共享的标记 -->
     <update id="updateFileById"
-            parameterType="cn.clouddisk.entity.MyFile">
+            parameterType="cn.clouddisk.entity.UserFile">
 		UPDATE FILE SET canshare=#{canshare} WHERE id=#{id}
 	</update>
     <!-- 根据文件id删除文件记录 -->

@@ -37,12 +37,6 @@ public class CrawlUtils {
 
     private static JSONObject json = JSON.parseObject(cssQueryS);
 
-    public static String getFileType(String fileName) {
-        int beginIndex = fileName.lastIndexOf('.');
-        if (beginIndex < 0) return "";
-        return fileName.substring(beginIndex);
-    }
-
     public static String getTitle(String url) {
         if (url.replaceFirst("https?://", "").startsWith("m.")) {
             url = url.replaceFirst("m.", "");

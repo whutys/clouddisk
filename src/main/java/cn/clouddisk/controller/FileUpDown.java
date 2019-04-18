@@ -1,16 +1,15 @@
 package cn.clouddisk.controller;
 
-import cn.clouddisk.entity.MyFile;
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.impl.FileService;
-import cn.clouddisk.utils.CrawlUtils;
+import cn.clouddisk.entity.UserFile;
+import cn.clouddisk.service.IFileService;
 import cn.clouddisk.utils.ShiroUtils;
 import org.apache.shiro.authz.annotation.RequiresUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,23 +29,20 @@ import java.util.UUID;
 @Controller
 public class FileUpDown {
 
-    @Value("${storePath}")
-    private String storePath; // 存储目录 E:\\BaiduYunDownload
+    @Value("${fileDir}")
+    private String fileDir; // 存储目录 E:\\BaiduYunDownload
     private static final long time = System.currentTimeMillis();
     private static final int normallimit = 1000 * 1024 * 1024; // 普通用户上传单个文件的最大体积 1G
-    private static final long viplimit = 2000 * 1024 * 1024; // 普通用户上传单个文件的最大体积 2G
+    private static final long viplimit = 2000 * 1024 * 1024; // vip用户上传单个文件的最大体积 2G
     private static final int factor = 1024 * 1024; // Mb到字节的转换因子
 
     @Autowired
-    private FileService fileService;
-    @Autowired
-    private MyFile myFile;
+    private IFileService fileService;
 
     @ResponseBody
     @PostMapping(value = "/uploadfile")
-    public Map<String, Object> upLoad(@RequestParam("file") MultipartFile multipartFile) {
+    public Map<String, Object> upLoad(@RequestParam("file") MultipartFile multipartFile,UserFile userFile) {
         String fileFileName = multipartFile.getOriginalFilename();
-        String uuid = UUID.randomUUID() + CrawlUtils.getFileType(fileFileName);
         Map<String, Object> map = new HashMap<>();
         User user = ShiroUtils.getUser();
         String user_name = user.getUsername();
@@ -56,15 +52,16 @@ public class FileUpDown {
         } catch (Exception e1) {
             e1.printStackTrace();
         }
-        File dir=new File(storePath+File.separator+user_name);
-        if (!dir.exists())dir.mkdirs();
-        File filetostore = new File(storePath + File.separator + user_name, fileFileName);
+        File dir = new File(fileDir + File.separator + user_name);
+        if (!dir.exists()) dir.mkdirs();
+        File fileToSave = new File(fileDir + File.separator + user_name, fileFileName);
         long size = multipartFile.getSize(); // 上传文件的大小
         if (size == 0) {
             map.put("error", "文件大小不能为0");
         } else {
-            if (filetostore.exists()) {
+            if (fileToSave.exists()) {
                 int index = fileFileName.lastIndexOf(".");
+                String uuid = UUID.randomUUID() + ((index < 0 ? "" : fileFileName.substring(index)));
                 StringBuilder sb;
                 String str = Long.toString((System.currentTimeMillis() - time) >> 3);
                 if (index < 0) {
@@ -76,7 +73,7 @@ public class FileUpDown {
                     sb.append(fileFileName.substring(index));
                 }
                 fileFileName = sb.toString();
-                filetostore = new File(storePath + File.separator + user_name, fileFileName);
+                fileToSave = new File(fileDir + File.separator + user_name, fileFileName);
             }
             if (isvip == 0 && size > normallimit) {
                 map.put("error", "普通用户最大只能上传" + normallimit / factor + "Mb的文件");
@@ -87,19 +84,19 @@ public class FileUpDown {
                 // 验证全部通过，把文件复制到本地硬盘的用户的目录下
                 Integer fileid = null;
                 try {
-                    multipartFile.transferTo(filetostore);
+                    multipartFile.transferTo(fileToSave);
                     // FileUtils.copyFile(file, store); // 上传文件到本地硬盘
                     // 把文件信息存入数据库
-                    myFile.setCreatetime(new java.util.Date());
-                    myFile.setFilename(fileFileName);
-                    myFile.setFilepath(user_name);
-                    myFile.setFilesize(String.valueOf(size / 1024 + 1));
-                    myFile.setCanshare(0);
-                    fileid = fileService.insertFile(myFile);
+                    userFile.setCreatetime(new java.util.Date());
+                    userFile.setFilename(fileFileName);
+                    userFile.setFilepath(user_name);
+                    userFile.setFilesize(String.valueOf(size / 1024 + 1));
+                    userFile.setCanshare(0);
+                    fileid = fileService.insertFile(userFile);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    if (filetostore.exists()) { // 中途出现异常，把拷贝的文件删除
-                        filetostore.delete();
+                    if (fileToSave.exists()) { // 中途出现异常，把拷贝的文件删除
+                        fileToSave.delete();
                     }
                     if (fileid != null) {
                         fileService.deleteFileById(fileid);
@@ -112,20 +109,19 @@ public class FileUpDown {
         return map;//JSONObject.parseObject(JSON.toJSONString(map)).toJSONString();
     }
 
-    @RequestMapping("/download")
-    public String downLoad(HttpServletRequest request, HttpServletResponse response, MyFile myFile) {
+    @GetMapping("/download")
+    public String downLoad(HttpServletRequest request, HttpServletResponse response, int id) {
         FileInputStream in = null;
         try {
-            String path = fileService.findFilepathById(myFile.getId()); // 相对于/upload的路径
-            if (path == null || "".equals(path)) {
+            UserFile userFile = fileService.findFileById(id); // 相对于/upload的路径
+            if (userFile == null ) {
                 request.setAttribute("message", "对不起，您要下载的资源已被删除");
                 return "message";
             }
-            path = storePath + File.separator + path;
-            File file = new File(path + File.separator + myFile.getFilename());
+            File file = new File(fileDir + File.separator + userFile.getFilepath() + File.separator + userFile.getFilename());
             // 通知浏览器以下载方式打开
             response.setHeader("content-disposition",
-                    "attachment;filename=" + URLEncoder.encode(myFile.getFilename(), "UTF-8"));
+                    "attachment;filename=" + URLEncoder.encode(userFile.getFilename(), "UTF-8"));
 
             in = new FileInputStream(file);
             int len;
