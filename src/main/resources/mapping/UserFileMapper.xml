@@ -19,20 +19,26 @@
         type：指定自定义缓存的全类名；   -->
     <!-- 分页查找所有和搜索文字匹配的文件 -->
     <select id="getAllFiles"
-            parameterType="cn.clouddisk.entity.PageBean"
+            parameterType="String"
             resultType="cn.clouddisk.entity.UserFile">
-		SELECT id,filename,filepath,filesize,createtime,canshare
-		FROM file WHERE
-		canshare=1 AND filename LIKE '%${searchcontent}%' LIMIT
-		#{startindex},#{pagesize}
-	</select>
+        SELECT
+            id,
+            filename,
+            filepath,
+            filesize,
+            createtime,
+            canshare
+        FROM file
+        WHERE
+            canshare = 1 AND filename LIKE '%${searchcontent}%'
+    </select>
 
     <!-- 分页查找某个用户所有的文件 -->
-    <!-- <select id="getUserFiles" parameterType="java.util.Map" resultType="cn.clouddisk.entity.MyFile">
+    <!-- <select id="findUserFilesByType" parameterType="java.util.Map" resultType="cn.clouddisk.entity.MyFile">
         SELECT id,filename,filepath,filesize,createtime,canshare FROM file WHERE
         filepath=#{filepath} LIMIT #{startindex},#{pagesize} </select> -->
 
-    <select id="getUserFiles" parameterType="java.util.Map"
+    <select id="getUserFilesByType" parameterType="java.util.Map"
             resultType="cn.clouddisk.entity.UserFile">
         SELECT * FROM file
         <trim prefix="where" prefixOverrides="and">
@@ -52,38 +58,45 @@
                         </foreach>
                     </otherwise>
                 </choose>
-
             </if>
         </trim>
     </select>
 
     <!-- 统计一个用户一共多少文件 -->
-    <select id="countUserFiles" parameterType="java.lang.String"
+    <select id="countUserFiles" parameterType="cn.clouddisk.entity.UserFile"
             resultType="int">
-		SELECT COUNT(id) totalrecord FROM file WHERE
-		filepath=#{filepath}
-	</select>
+        SELECT COUNT(id) totalrecord
+        FROM file
+        <trim prefix="where" prefixOverrides="and">
+            <if test="filename!=null">and filename = #{filename}</if>
+            <if test="filepath!=null">and filepath = #{filepath}</if>
+        </trim>
+    </select>
 
     <!-- 和搜索内容匹配的所有的共享的文件总数 -->
     <select id="countSharedFile" parameterType="java.lang.String"
             resultType="int">
-		SELECT COUNT(id) totalrecord FROM file WHERE canshare=1 AND
-		filename LIKE
-		'%${_parameter}%'
-	</select>
+        SELECT COUNT(id) totalrecord
+        FROM file
+        WHERE canshare = 1 AND
+              filename LIKE
+              '%${_parameter}%'
+    </select>
 
     <!-- 根据文件id查找文件 -->
     <select id="getFileById" parameterType="int"
             resultType="UserFile">
-		SELECT * FROM file WHERE id=#{id}
-	</select>
+        SELECT *
+        FROM file
+        WHERE id = #{id}
+    </select>
 
     <!-- 把用户上传的文件信息写入数据库 -->
-    <insert id="insertFile"
+    <insert id="insertUserFile"
             parameterType="cn.clouddisk.entity.UserFile">
         <selectKey keyProperty="id" order="AFTER"
-                   resultType="java.lang.Integer">
-            SELECT LAST_INSERT_ID()
+                   resultType="int">
+            SELECT last_insert_id()
         </selectKey>
         INSERT INTO file (filename,filepath,filesize,createtime,canshare)
         VALUES(#{filename},#{filepath},#{filesize},#{createtime},#{canshare})
@@ -91,12 +104,15 @@
     <!-- 根据文件id更新文件是否共享的标记 -->
     <update id="updateFileById"
             parameterType="cn.clouddisk.entity.UserFile">
-		UPDATE FILE SET canshare=#{canshare} WHERE id=#{id}
-	</update>
+        UPDATE FILE
+        SET canshare = #{canshare}
+        WHERE id = #{id}
+    </update>
     <!-- 根据文件id删除文件记录 -->
     <delete id="deleteFileById" parameterType="int">
-		DELETE FROM FILE WHERE
-		id=#{value}
-	</delete>
+        DELETE FROM FILE
+        WHERE
+            id = #{value}
+    </delete>
 
 </mapper>

@@ -35,9 +35,8 @@
                     <label class="col-lg-3 control-label">昵称</label>
                     <div class="col-lg-5">
                         <input path="nickname" type="text" class="form-control"
-                               name="nickName" placeholder="请输入昵称" value="${user.nickname }"/>
-                        <form:errors path="nickname"></form:errors>
-                        <span id="checknickname">${nickNameError }</span>
+                                    name="nickname" placeholder="请输入昵称" value="${user.nickname }"/>
+                        <form:errors path="nickname"/>
                     </div>
                 </div>
 
@@ -45,8 +44,8 @@
                     <label class="col-lg-3 control-label">用户名</label>
                     <div class="col-lg-5">
                         <input path="username" type="text" class="form-control"
-                               name="userName" placeholder="请输入用户名" value="${user.username }"/>
-                        <form:errors path="username"></form:errors>
+                               name="username" placeholder="请输入用户名" value="${user.username }"/>
+                        <form:errors path="username"/>
                     </div>
                 </div>
 
@@ -54,8 +53,8 @@
                     <label class="col-lg-3 control-label">密码</label>
                     <div class="col-lg-5">
                         <input path="password" type="password" class="form-control"
-                               name="passWord" placeholder="请输入密码" value="${user.password }"/>
-                        <form:errors path="password"></form:errors>
+                               name="password" placeholder="请输入密码" value="${user.password }"/>
+                        <form:errors path="password"/>
                     </div>
                 </div>
 
@@ -64,7 +63,7 @@
                     <div class="col-lg-5">
                         <input type="password" class="form-control"
                                name="confirmPassword" placeholder="请输入密码"/>
-                        <form:errors path="confirmPassword"></form:errors>
+                        <form:errors path="confirmPassword"/>
                     </div>
                 </div>
 
@@ -73,7 +72,7 @@
                     <div class="col-lg-5">
                         <input path="email" type="text" class="form-control" name="email"
                                placeholder="请输入电子邮箱" value="${user.email }"/>
-                        <form:errors path="email"></form:errors>
+                        <form:errors path="email"/>
                     </div>
                 </div>
 
@@ -82,7 +81,7 @@
                     <div class="col-lg-5">
                         <input type="text" class="form-control" name="inviteCode"
                                placeholder="请输入邀请码"/>
-                        <form:errors path="inviteCode"></form:errors>
+                        <form:errors path="inviteCode"/>
                     </div>
                 </div>
 
@@ -135,14 +134,14 @@
                                 validating: 'glyphicon glyphicon-refresh'
                             },
                             fields: {
-                                nickName: {
+                                nickname: {
                                     validators: {
                                         notEmpty: {
                                             message: '昵称不为空'
                                         }
                                     }
                                 },
-                                userName: {
+                                username: {
                                     message: '用户名不合法',
                                     validators: {
                                         notEmpty: {
@@ -158,11 +157,11 @@
                                             message: '用户名只能由字母数字小数点和下划线组成'
                                         },
                                         remote: {
-                                            url: '${pageContext.request.contextPath }/checkUserName',
+                                            url: '${pageContext.request.contextPath }/checkUsername',
                                             message: '用户名已被注册'
                                         },
                                         different: {
-                                            field: 'passWord',
+                                            field: 'password',
                                             message: '用户名和密码不可相同'
                                         }
                                     }
@@ -177,7 +176,7 @@
                                         }
                                     }
                                 },
-                                passWord: {
+                                password: {
                                     validators: {
                                         notEmpty: {
                                             message: '密码不为空'
@@ -187,7 +186,7 @@
                                             message: '两次密码不一致'
                                         },
                                         different: {
-                                            field: 'userName',
+                                            field: 'username',
                                             message: '用户名和密码不可相同'
                                         }
                                     }
@@ -198,11 +197,11 @@
                                             message: '密码不为空'
                                         },
                                         identical: {
-                                            field: 'passWord',
+                                            field: 'password',
                                             message: '两次密码不一致'
                                         },
                                         different: {
-                                            field: 'userName',
+                                            field: 'username',
                                             message: '用户名和密码不可相同'
                                         }
                                     }

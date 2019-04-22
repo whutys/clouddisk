@@ -5,10 +5,10 @@ import cn.clouddisk.entity.User;
 import java.util.List;
 
 public interface IUserService {
-    List<User> selectUserList(User user);
-    User selectUserByName(String username);
-    int insertUser(User user);
-    int deleteUserById(int userId);
+    List<User> findUserList(User user);
+    User findUserByName(String username);
+    int addUser(User user);
+    int removeUserById(int userId);
     int updateUser(User user);
-    User selectUserById(int userId);
+    User findUserById(int userId);
 }

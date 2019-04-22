@@ -26,19 +26,19 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public List<User> selectUserList(User user) {
+    public List<User> findUserList(User user) {
         return userMapper.selectUserList(user);
     }
 
     @Override
-    public int insertUser(User user) {
+    public int addUser(User user) {
         user.setSalt("whutys");
         user.setPassword(passwordService.encryptPassword(user.getPassword(), "whutys", 3));
         return userMapper.insertUser(user);
     }
 
     @Override
-    public int deleteUserById(int userId) {
+    public int removeUserById(int userId) {
         return userMapper.deleteUserById(userId);
     }
 
@@ -49,11 +49,11 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public User selectUserById(int userId) {
+    public User findUserById(int userId) {
         return userMapper.selectUserById(userId);
     }
 
-    public User selectUserByName(String username) {
+    public User findUserByName(String username) {
         return userMapper.selectUserByName(username);
     }
 }

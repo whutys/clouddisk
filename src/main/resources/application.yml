@@ -68,3 +68,9 @@ shiro:
     expireTime: 30
     dbSyncPeriod: 1
     validationInterval: 10
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: "true"
+  support-methods-arguments: "true"
+  params: count=countSql

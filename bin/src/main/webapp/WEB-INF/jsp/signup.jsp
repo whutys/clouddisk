@@ -158,7 +158,7 @@
 															}
 														}
 													},
-													userName : {
+													username : {
 														message : '用户名不合法',
 														validators : {
 															notEmpty : {
@@ -203,7 +203,7 @@
 																message : '两次密码不一致'
 															},
 															different : {
-																field : 'userName',
+																field : 'username',
 																message : '用户名和密码不可相同'
 															}
 														}
@@ -218,7 +218,7 @@
 																message : '两次密码不一致'
 															},
 															different : {
-																field : 'userName',
+																field : 'username',
 																message : '用户名和密码不可相同'
 															}
 														}

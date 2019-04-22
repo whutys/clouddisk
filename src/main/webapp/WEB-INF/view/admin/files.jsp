@@ -159,13 +159,13 @@
                             <tr>
                             </thead>
                             <tbody>
-                            <c:forEach var="c" items="${requestScope.pagebean.list}"
+                            <c:forEach var="efile" items="${requestScope.pagebean.list}"
                                        varStatus="stat">
                             <tr class="${stat.count%2==0?'success':'warning'}">
                                 <td><a class="btn"
-                                       onclick="openfile('${c.filepath}','${c.filename }')"> <c:set
+                                       onclick="openfile('${efile.filepath}','${efile.filename }')"> <c:set
                                         var="filetype"
-                                        value="${c.filename.substring(c.filename.lastIndexOf('.')+1,c.filename.length())}"></c:set>
+                                        value="${efile.filename.substring(efile.filename.lastIndexOf('.')+1,efile.filename.length())}"></c:set>
                                     <c:choose>
                                         <c:when test="${filetype=='mp4' }">
                                             <span class="glyphicon glyphicon-hd-video"></span>
@@ -183,44 +183,44 @@
                                                 test="${filetype=='txt'||filetype=='pdf'||filetype=='doc' }">
                                             <span class="glyphicon glyphicon-file"></span>
                                         </c:when>
-                                    </c:choose> ${c.filename }
+                                    </c:choose> ${efile.filename }
                                 </a></td>
                                 <td><c:choose>
-                                    <c:when test="${c.filesize>1048576}">
+                                    <c:when test="${efile.filesize>1048576}">
                                         <fmt:formatNumber type="number"
-                                                          value="${c.filesize/1048576 }" pattern="0.0"
+                                                          value="${efile.filesize/1048576 }" pattern="0.0"
                                                           maxFractionDigits="1"></fmt:formatNumber>G</c:when>
-                                    <c:when test="${c.filesize>1024}">
+                                    <c:when test="${efile.filesize>1024}">
                                         <fmt:formatNumber type="number"
-                                                          value="${c.filesize/1024 }" pattern="0.0"
+                                                          value="${efile.filesize/1024 }" pattern="0.0"
                                                           maxFractionDigits="1"></fmt:formatNumber>M</c:when>
                                     <c:otherwise>
-                                        <fmt:formatNumber type="number" value="${c.filesize}"
+                                        <fmt:formatNumber type="number" value="${efile.filesize}"
                                                           pattern="0.0"
                                                           maxFractionDigits="1"></fmt:formatNumber>k</c:otherwise>
                                 </c:choose></td>
-                                <td><fmt:formatDate value="${c.createtime }"
+                                <td><fmt:formatDate value="${efile.createtime }"
                                                     pattern="yyyy-MM-dd HH:mm"/></td>
                                 <td>
                                     <button type="button" class="btn btn-primary btn-xs"
-                                            onclick="downloadfile('${c.id}','${c.filename }')">
+                                            onclick="downloadfile('${efile.id}','${efile.filename }')">
                                         <span class="glyphicon glyphicon-download-alt"></span>下载
                                     </button>
                                 </td>
-                                <td><select class="form-control input-sm" id="${c.id}"
-                                            onchange="gochange(${pagebean.currentpage},${c.id})">
-                                    <c:if test="${c.canshare==0 }">
+                                <td><select class="form-control input-sm" id="${efile.id}"
+                                            onchange="gochange(${pagebean.currentpage},${efile.id})">
+                                    <c:if test="${efile.canshare==0 }">
                                         <option value="0">私有</option>
                                         <option value="1">共享</option>
                                     </c:if>
-                                    <c:if test="${c.canshare==1 }">
+                                    <c:if test="${efile.canshare==1 }">
                                         <option value="1" selected="selected">共享</option>
                                         <option value="0">私有</option>
                                     </c:if>
                                 </select></td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-xs"
-                                            onclick="godelete(${c.id})">
+                                            onclick="godelete(${efile.id})">
                                         <span class="glyphicon glyphicon-trash"></span>删除
                                     </button>
                                 </td>

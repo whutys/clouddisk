@@ -1,10 +1,8 @@
 package cn.clouddisk.service.impl;
 
-import cn.clouddisk.entity.PageBean;
 import cn.clouddisk.entity.UserFile;
 import cn.clouddisk.mapper.UserFileMapper;
 import cn.clouddisk.service.IFileService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,11 +13,14 @@ import java.util.Map;
 @Transactional
 public class FileServiceImpl implements IFileService{
 
-	@Autowired
 	private UserFileMapper userFileMapper;
-	
-	public  List<UserFile> getAllFiles(PageBean pageBean) {
-		return userFileMapper.getAllFiles(pageBean);
+
+	public FileServiceImpl(UserFileMapper userFileMapper) {
+		this.userFileMapper = userFileMapper;
+	}
+
+	public  List<UserFile> findAllFiles(String searchcontent) {
+		return userFileMapper.getAllFiles(searchcontent);
 	}
 	
 	public  int countShareFiles(String searchcontent){
@@ -31,15 +32,16 @@ public class FileServiceImpl implements IFileService{
 	}
 	
 	public  Integer insertFile(UserFile file) {
-		return userFileMapper.insertFile(file);
+		return userFileMapper.insertUserFile(file);
 	}
 
-	public  List<UserFile> getUserFiles(Map<String, Object> map){
-		return userFileMapper.getUserFiles(map);
+	public  List<UserFile> findUserFilesByType(Map<String, Object> map){
+		List<UserFile> userFilesList = userFileMapper.getUserFilesByType(map);
+		return userFilesList;
 	}
 
-	public  int countUserFiles(String filepath){
-		return userFileMapper.countUserFiles(filepath);
+	public  int countUserFiles(UserFile userFile){
+		return userFileMapper.countUserFiles(userFile);
 	}
 
 	public  void updateFileById(UserFile userFile){

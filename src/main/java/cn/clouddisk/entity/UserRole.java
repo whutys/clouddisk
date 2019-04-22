@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * 用户角色
+ */
 @Getter
 @Setter
 @ToString

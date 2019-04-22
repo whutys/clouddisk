@@ -28,7 +28,7 @@
 	</select>
 
     <!-- 分页查找某个用户所有的文件 -->
-    <!-- <select id="getUserFiles" parameterType="java.util.Map" resultType="cn.clouddisk.entity.MyFile">
+    <!-- <select id="findUserFilesByType" parameterType="java.util.Map" resultType="cn.clouddisk.entity.MyFile">
         SELECT id,filename,filepath,filesize,createtime,canshare FROM file WHERE
         filepath=#{filepath} LIMIT #{startindex},#{pagesize} </select> -->
 

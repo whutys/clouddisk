@@ -14,9 +14,8 @@
     <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
     <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
     <script type="text/javascript">
-
         $(function () {
-            $("#pagesize")[0].selectedIndex =${pagebean.pagesize/5-1};
+            $("#pagesize")[0].selectedIndex =${pageInfo.pageSize/5-1};
         })
     </script>
 </head>
@@ -30,9 +29,9 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-4">
-            关键词：<label id="searchcontent">${pagebean.searchcontent }</label>
+            关键词：<label id="searchcontent">${searchcontent }</label>
         </div>
-        <div class="col-lg-2 col-lg-offset-6">共[${requestScope.pagebean.totalrecord}]条记录</div>
+        <div class="col-lg-2 col-lg-offset-6">共[${pageInfo.total}]条记录</div>
     </div>
     <div class="table-responsive">
         <table class="table table-hover">
@@ -46,13 +45,13 @@
             <tr>
             </thead>
             <tbody>
-            <c:forEach var="c" items="${requestScope.pagebean.list}"
+            <c:forEach var="efile" items="${pageInfo.list}"
                        varStatus="stat">
             <tr class="${stat.count%2==0?'success':'warning'}">
                 <td><a class="btn"
-                       onclick="openfile('${c.filepath}','${c.filename }')"> <c:set
+                       onclick="openfile('${efile.filepath}','${efile.filename }')"> <c:set
                         var="filetype"
-                        value="${c.filename.substring(c.filename.lastIndexOf('.')+1,c.filename.length())}"></c:set>
+                        value="${efile.filename.substring(efile.filename.lastIndexOf('.')+1,efile.filename.length())}"/>
                     <c:choose>
                         <c:when test="${filetype=='mp4' }">
                             <span class="glyphicon glyphicon-hd-video"></span>
@@ -70,25 +69,25 @@
                                 test="${filetype=='txt'||filetype=='pdf'||filetype=='doc' }">
                             <span class="glyphicon glyphicon-file"></span>
                         </c:when>
-                    </c:choose> ${c.filename }
+                    </c:choose> ${efile.filename }
                 </a></td>
                 <td><c:choose>
-                    <c:when test="${c.filesize>1000000}">
-                        <fmt:formatNumber type="number" value="${c.filesize/1000000 }"
-                                          pattern="0.0" maxFractionDigits="1"></fmt:formatNumber>G</c:when>
-                    <c:when test="${c.filesize>1000}">
-                        <fmt:formatNumber type="number" value="${c.filesize/1000 }"
-                                          pattern="0.0" maxFractionDigits="1"></fmt:formatNumber>M</c:when>
+                    <c:when test="${efile.filesize>1000000}">
+                        <fmt:formatNumber type="number" value="${efile.filesize/1000000 }"
+                                          pattern="0.0" maxFractionDigits="1"/>G</c:when>
+                    <c:when test="${efile.filesize>1000}">
+                        <fmt:formatNumber type="number" value="${efile.filesize/1000 }"
+                                          pattern="0.0" maxFractionDigits="1"/>M</c:when>
                     <c:otherwise>
-                        <fmt:formatNumber type="number" value="${c.filesize}"
-                                          pattern="0.0" maxFractionDigits="1"></fmt:formatNumber>k</c:otherwise>
+                        <fmt:formatNumber type="number" value="${efile.filesize}"
+                                          pattern="0.0" maxFractionDigits="1"/>k</c:otherwise>
                 </c:choose></td>
-                <td>${c.filepath }</td>
-                <td><fmt:formatDate value="${c.createtime }"
+                <td>${efile.filepath }</td>
+                <td><fmt:formatDate value="${efile.createtime }"
                                     pattern="yyyy-MM-dd HH:mm"/></td>
                 <td>
                     <button type="button" class="btn btn-primary btn-xs"
-                            onclick="downloadfile('${c.id}','${c.filename }')">
+                            onclick="downloadfile('${efile.id}','${efile.filename }')">
                         <span class="glyphicon glyphicon-download-alt"></span>下载
                     </button>
                 </td>
@@ -101,48 +100,47 @@
 <ul class="pager">
 
     <li>每页 <select title="选择每页记录数"
-                   onchange="gotopage(${pagebean.currentpage})" id="pagesize">
-        <option
-                value="5">5
+                   onchange="gotoPage(${pageInfo.pageSize})" id="pageSize">
+        <option value="5">5
         </option>
         <option value="10">10</option>
         <option value="15">15</option>
     </select>条
     </li>
-    <li>共[${requestScope.pagebean.totalpage}]页</li>
-    <li><a href="javascript:void(0)" onclick="gotopage(1)">回到首页</a></li>
+    <li>共[${pageInfo.pages}]页</li>
+    <li><a href="#" onclick="gotoPage(${pageInfo.navigateFirstPage})">首页</a></li>
     <li><c:choose>
-        <c:when test="${requestScope.pagebean.currentpage==1}">
-            <a href="javascript:void(0)">&laquo;</a>
+        <c:when test="${pageInfo.isFirstPage}">
+            <span>&laquo;</span>
         </c:when>
         <c:otherwise>
-            <a href="javascript:void(0)"
-               onclick="gotopage(${requestScope.pagebean.currentpage-1})">&laquo;</a>
+            <a href="#"
+               onclick="gotoPage(${pageInfo.prePage})">&laquo;</a>
         </c:otherwise>
     </c:choose></li>
-    <c:forEach var='pagenum' items='${requestScope.pagebean.pagebar}'>
+    <c:forEach var="pageNum" items='${pageInfo.navigatepageNums}'>
         <c:choose>
-            <c:when test="${pagenum==pagebean.currentpage }">
-                <li><a href="#">${pagenum }</a></li>
+            <c:when test="${pageNum==pageInfo.pageNum }">
+                <li><span>${pageNum }</span></li>
             </c:when>
             <c:otherwise>
-                <li><a href="javascript:void(0)"
-                       onclick="gotopage(${pagenum})">${pagenum}</a></li>
+                <li><a href="#"
+                       onclick="gotoPage(${pageNum})">${pageNum}</a></li>
             </c:otherwise>
         </c:choose>
     </c:forEach>
     <li><c:choose>
         <c:when
-                test="${requestScope.pagebean.currentpage==requestScope.pagebean.totalpage}">
-            <a href="javascript:void(0)">&raquo;</a>
+                test="${pageInfo.isLastPage}">
+            <a href=":void(0)">&raquo;</a>
         </c:when>
         <c:otherwise>
-            <a href="javascript:void(0)"
-               onclick="gotopage(${requestScope.pagebean.currentpage+1})">&raquo;</a>
+            <a href="#"
+               onclick="gotoPage(${pageInfo.nextPage})">&raquo;</a>
         </c:otherwise>
     </c:choose></li>
     <li>跳转至第<input type="text" style="width: 2%;" maxlength="5"
-                   id="pagenum" onblur="gotopageon()">页
+                   id="pageNum" onblur="gotoPageOn()"/>页
     </li>
 </ul>
 
@@ -150,41 +148,35 @@
     function openfile(filepath, filename) {
         var str = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
         filename = encodeURI(encodeURI(filename));
-        if ('mp4' == str || 'ogg' == str) {
+        if ('mp4' === str || 'ogg' === str) {
             window.location.href = '${pageContext.request.contextPath}/videoPlay?username=' + filepath + '&filename=' + filename;
+        } else if ('mp3' === str || 'ogg' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        } else if ('txt' === str || 'doc' === str || 'pdf'=== str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        } else if ('jpg' === str || 'jpeg' === str || 'png' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
         }
-    };
+    }
 
     function downloadfile(id) {
         window.location.href = '${pageContext.request.contextPath}/download?id=' + id;
-    };
+    }
 
-    function gotopage(pageNo) {
-        var pagesize = document.getElementById("pagesize").value;
+    function gotoPage(pageNum) {
+        var pageSize = document.getElementById("pageSize").value;
         var searchcontent = $("#searchcontent").text();
-        if ('${pageBean.totalrecord }' <= (pageNo - 1) * pagesize) {
-            pageNo = 1;
-        }
-        window.location.href = '${pageContext.request.contextPath }/searchfile?currentpage=' + pageNo + '&pagesize=' + pagesize + '&searchcontent=' + searchcontent;
-    };
+        window.location.href = '${pageContext.request.contextPath }/searchfile?pageNum=' + pageNum + '&pageSize=' + pageSize + '&searchcontent=' + searchcontent;
+    }
 
-    function gotopageon() {
-        var pageNo = document.getElementById("pagenum").value
-        if (pageNo != "") {
-            var pagesize = document.getElementById("pagesize").value;
-            var searchcontent = $("#searchcontent").text();
+    function gotoPageOn() {
+        var pageNum = document.getElementById("pageNum").value.trim();
+        if (pageNum === "") return;
 
-            if (pageNo > '${pagebean.totalpage}') {
-                pageNo = '${pagebean.totalpage}';
-                pagesize = '${pagebean.pagesize}';
-            } else if (pageNo < 1) {
-                pageNo = 1;
-                pagesize = '${pagebean.pagesize}';
-            }
-            ;
+        var pageSize = document.getElementById("pageSize").value;
+        var searchcontent = $("#searchcontent").text();
 
-            window.location.href = '${pageContext.request.contextPath }/searchfile?currentpage=' + pageNo + '&pagesize=' + pagesize + '&searchcontent=' + searchcontent;
-        }
+        window.location.href = '${pageContext.request.contextPath }/searchfile?pageNum=' + pageNum + '&pageSize=' + pageSize + '&searchcontent=' + searchcontent;
     }
 
 </script>

@@ -90,7 +90,7 @@ public class FileUpDown {
                     userFile.setCreatetime(new java.util.Date());
                     userFile.setFilename(fileFileName);
                     userFile.setFilepath(user_name);
-                    userFile.setFilesize(String.valueOf(size / 1024 + 1));
+                    userFile.setFilesize(size / 1024 + 1);
                     userFile.setCanshare(0);
                     fileid = fileService.insertFile(userFile);
                 } catch (Exception e) {

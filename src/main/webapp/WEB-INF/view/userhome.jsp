@@ -18,7 +18,6 @@
     <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(function () {
-            //$("#pagesize").get(0).selectedIndex=${pagebean.pagesize/5-1 };
             $("#fileupload").fileinput({
                 language: 'zh',
                 uploadUrl: '${pageContext.request.contextPath }/uploadfile',
@@ -94,6 +93,9 @@
                     <div class="col-lg-1 col-xs-3">
                         <button type="button" class="btn btn-primary btn-sm">离线下载</button>
                     </div>
+                    <div class="col-lg-1 col-xs-3">
+                        <button type="button" class="btn btn-primary btn-sm" onclick="window.location.href='${pageContext.request.contextPath }/linkFiles'">更新列表</button>
+                    </div>
                     <div class="modal fade" id="myModal1" tabindex="-1" role="dialog"
                          aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
@@ -137,12 +139,12 @@
                             <tr>
                             </thead>
                             <tbody>
-                            <c:forEach var="c" items="${requestScope.pagebean.list}"
+                            <c:forEach var="efile" items="${requestScope.pageInfo.list}"
                                        varStatus="stat">
                             <tr class="${stat.count%2==0?'success':'warning'}">
                                 <td><a class="btn"
-                                       onclick="openfile('${c.filepath}','${c.filename }')"> <c:set var="filetype"
-                                                                                                    value="${c.filename.substring(c.filename.lastIndexOf('.')+1,c.filename.length())}"></c:set>
+                                       onclick="openfile('${efile.filepath}','${efile.filename }')"> <c:set var="filetype"
+                                                                                                            value="${efile.filename.substring(efile.filename.lastIndexOf('.')+1,efile.filename.length())}"/>
                                     <c:choose>
                                         <c:when test="${filetype=='mp4' }">
                                             <span class="glyphicon glyphicon-hd-video"></span>
@@ -160,44 +162,44 @@
                                                 test="${filetype=='txt'||filetype=='pdf'||filetype=='doc' }">
                                             <span class="glyphicon glyphicon-file"></span>
                                         </c:when>
-                                    </c:choose> ${c.filename }
+                                    </c:choose> ${efile.filename }
                                 </a></td>
                                 <td><c:choose>
-                                    <c:when test="${c.filesize>1048576}">
+                                    <c:when test="${efile.filesize>1048576}">
                                         <fmt:formatNumber type="number"
-                                                          value="${c.filesize/1048576 }" pattern="0.0"
-                                                          maxFractionDigits="1"></fmt:formatNumber>G</c:when>
-                                    <c:when test="${c.filesize>1024}">
+                                                          value="${efile.filesize/1048576 }" pattern="0.0"
+                                                          maxFractionDigits="1"/>G</c:when>
+                                    <c:when test="${efile.filesize>1024}">
                                         <fmt:formatNumber type="number"
-                                                          value="${c.filesize/1024 }" pattern="0.0"
-                                                          maxFractionDigits="1"></fmt:formatNumber>M</c:when>
+                                                          value="${efile.filesize/1024 }" pattern="0.0"
+                                                          maxFractionDigits="1"/>M</c:when>
                                     <c:otherwise>
-                                        <fmt:formatNumber type="number" value="${c.filesize}"
+                                        <fmt:formatNumber type="number" value="${efile.filesize}"
                                                           pattern="0.0"
-                                                          maxFractionDigits="1"></fmt:formatNumber>k</c:otherwise>
+                                                          maxFractionDigits="1"/>k</c:otherwise>
                                 </c:choose></td>
-                                <td><fmt:formatDate value="${c.createtime }"
+                                <td><fmt:formatDate value="${efile.createtime }"
                                                     pattern="yyyy-MM-dd HH:mm"/></td>
                                 <td>
                                     <button type="button" class="btn btn-primary btn-xs"
-                                            onclick="downloadfile('${c.id}','${c.filename }')">
+                                            onclick="downloadfile('${efile.id}','${efile.filename }')">
                                         <span class="glyphicon glyphicon-download-alt"></span>下载
                                     </button>
                                 </td>
-                                <td><select class="form-control input-sm" id="${c.id}"
-                                            onchange="change(${pagebean.currentpage},${c.id})">
-                                    <c:if test="${c.canshare==0 }">
+                                <td><select class="form-control input-sm" id="${efile.id}"
+                                            onchange="change(${efile.id})" >
+                                    <c:if test="${efile.canshare==0 }">
                                         <option value="0">私有</option>
                                         <option value="1">共享</option>
                                     </c:if>
-                                    <c:if test="${c.canshare==1 }">
+                                    <c:if test="${efile.canshare==1 }">
                                         <option value="1" selected="selected">共享</option>
                                         <option value="0">私有</option>
                                     </c:if>
                                 </select></td>
                                 <td>
                                     <button type="button" class="btn btn-danger btn-xs"
-                                            onclick="godelete(${c.id})">
+                                            onclick="godelete(${efile.id})">
                                         <span class="glyphicon glyphicon-trash"></span>删除
                                     </button>
                                 </td>
@@ -214,16 +216,16 @@
 <script type="text/javascript">
     function openfile(filepath, filename) {
         var str = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
-        if ('mp4' == str || 'ogg' == str) {
+        if ('mp4' === str || 'ogg' === str) {
             window.location.href = '${pageContext.request.contextPath}/videoPlay?username=' + filepath + '&filename=' + filename;
-        } else if ('mp3' == str || 'ogg' == str) {
-            window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
-        } else if ('txt' == str || 'doc' == str || 'pdf' == str) {
-            window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
-        } else if ('jpg' == str || 'jpeg' == str || 'png' == str) {
-            window.location.href = '/BaiduYunDownload/' + filepath + '/' + filename;
+        } else if ('mp3' === str || 'ogg' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        } else if ('txt' === str || 'doc' === str || 'pdf'=== str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        } else if ('jpg' === str || 'jpeg' === str || 'png' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
         }
-    };
+    }
 
     function downloadfile(id, filename) {
         window.location.href = '${pageContext.request.contextPath}/download?id=' + id + '&filename=' + filename;
@@ -231,20 +233,20 @@
 
     function godelete(fileid) {
         var r = confirm("确认删除文件？");
-        if (r == true) {
+        if (r === true) {
             window.location.href = '${pageContext.request.contextPath}/deletefile?id=' + fileid;
         } else {
             return false;
         }
-    };
+    }
 
-    function change(currentpage, fileid) {
+    function change(fileid) {
 
         var canshare = document.getElementById(fileid).value;
-        var pagesize = ${pagebean.pagesize};
+        <%--var pagesize = ${pageInfo.pagesize};--%>
         var r = confirm("如果设置共享，您的文件将可以被其他人搜索到");
-        if (r == true) {
-            window.location.href = '${pageContext.request.contextPath}/changefilestatus?currentpage=' + currentpage + '&pagesize=' + pagesize + '&id=' + fileid + '&canshare=' + canshare;
+        if (r === true) {
+            window.location.href = '${pageContext.request.contextPath}/changefilestatus?id=' + fileid + '&canshare=' + canshare;
         } else {
             location.reload();
         }

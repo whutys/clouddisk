@@ -5,6 +5,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.springframework.stereotype.Component;
 
+/**
+ * 权限实体
+ */
 @Component
 @Getter
 @Setter

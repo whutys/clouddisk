@@ -7,6 +7,9 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+/**
+ * 用户文件
+ */
 @Getter
 @Setter
 @ToString
@@ -15,7 +18,7 @@ public class UserFile extends BaseEntity {
     private int id;
     private String filename;
     private String filepath;
-    private String filesize;
+    private long filesize;
     private Date createtime;
     private int canshare;
 

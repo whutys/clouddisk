@@ -13,6 +13,9 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.util.List;
 
+/**
+ * 用户
+ */
 @Getter
 @Setter
 @ToString

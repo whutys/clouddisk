@@ -1,7 +1,7 @@
 package cn.clouddisk.shiro.service;
 
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.impl.UserServiceImpl;
+import cn.clouddisk.service.IUserService;
 import cn.clouddisk.shiro.web.exception.user.UserNotExistsException;
 import cn.clouddisk.shiro.web.exception.user.UserPasswordNotMatchException;
 import cn.clouddisk.utils.StringUtils;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LoginService {
     @Autowired
-    private UserServiceImpl userServiceImpl;
+    private IUserService userService;
     @Autowired
     private PasswordService passwordService;
 
@@ -27,7 +27,7 @@ public class LoginService {
             throw new UserPasswordNotMatchException();
         }
 
-        User user = userServiceImpl.selectUserByName(username);
+        User user = userService.findUserByName(username);
         if (user == null) {
             throw new UserNotExistsException();
         }

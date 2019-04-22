@@ -31,7 +31,7 @@ public class UserController {
     @RequiresPermissions("user:view")
     @GetMapping()
     public String user(User user, Model model){
-        List<User> list = userService.selectUserList(user);
+        List<User> list = userService.findUserList(user);
         list.forEach((each)->each.setRoles(roleService.selectRoleByUserId(each.getId())));
         model.addAttribute("users", list);
         return "user/user";
@@ -39,7 +39,7 @@ public class UserController {
     @RequiresPermissions("user:list")
     @GetMapping("/list")
     public String list(User user, Model model){
-        List<User> list = userService.selectUserList(user);
+        List<User> list = userService.findUserList(user);
         model.addAttribute("users", list);
         return "/user/user";
     }
@@ -51,19 +51,19 @@ public class UserController {
     @RequiresPermissions("user:add")
     @PostMapping("/add")
     public String addSave(User user,String username){
-        int userId = userService.insertUser(user);
-        userRoleService.insertUserRoleByUserId(userService.selectUserByName(username).getId());
+        int userId = userService.addUser(user);
+        userRoleService.insertUserRoleByUserId(userService.findUserByName(username).getId());
         return "redirect:/user";
     }
     @RequiresPermissions("user:remove")
     @GetMapping("/remove/{userId}")
     public String remove(@PathVariable("userId") int userId){
-        userService.deleteUserById(userId);
+        userService.removeUserById(userId);
         return "redirect:/user";
     }
     @GetMapping("/edit/{userId}")
     public String edit(@PathVariable("userId") int userId, ModelMap modelMap){
-        User user = userService.selectUserById(userId);
+        User user = userService.findUserById(userId);
         user.setPassword(null);
         modelMap.put("user", user);
         return "/user/edit";

@@ -18,7 +18,7 @@
 <div class="container">
     <div style="padding: 100px 0px 10px;">
         <div class="col-lg-8 col-lg-offset-3">
-            <form action="searchfile" method="post" class="form-horizontal"
+            <form action="${pageContext.request.contextPath}/searchfile" method="post" class="form-horizontal"
                   role="form">
                 <div class="row">
                     <div class="col-lg-6 col-lg-offset-1">
