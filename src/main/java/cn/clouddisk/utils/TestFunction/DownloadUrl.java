@@ -1,9 +1,5 @@
 package cn.clouddisk.utils.TestFunction;
 
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPFile;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;

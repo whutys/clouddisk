@@ -55,7 +55,7 @@ public class LogInOutController {
 
     @PostMapping("/logIn")
 //    @ResponseBody
-    public String login(User user, BindingResult bindingResult, HttpSession session, boolean rememberMe) {
+    public String login(@ModelAttribute(value = "user") User user, BindingResult bindingResult, HttpSession session, boolean rememberMe) {
         UsernamePasswordToken token = new UsernamePasswordToken(user.getUsername(), user.getPassword(), rememberMe);
         Subject subject = SecurityUtils.getSubject();
         try {
@@ -75,7 +75,7 @@ public class LogInOutController {
             if (StringUtils.isNotEmpty(e.getMessage())) msg = e.getMessage();
             bindingResult.rejectValue("username", "", msg);
             return "signin";
-//            return "redirect:/message.jsp";
+//            return "redirect:/message.html";
         }
 
     }
@@ -87,8 +87,7 @@ public class LogInOutController {
     }
 
     @GetMapping("/register")
-    public String register(Map map) {
-        map.put("user", new User());
+    public String register(@ModelAttribute(value = "user") User user) {
         return "signup";
     }
 

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>我的CloudDisk</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" th:href="@{/static/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/static/css/fileinput.min.css}"/>
+
+    <script type="text/javascript" th:src="@{/static/js/jquery-3.3.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/fileinput.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/locales/zh.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+        $(function () {
+            $("#fileupload").fileinput({
+                language: 'zh',
+                uploadUrl: '/uploadfile',
+                //allowedFileExtensions: ['mp4','zip','rar'],//接收的文件后缀
+                //uploadExtraData:{"id": 1, "fileName":'123.mp3'},
+                uploadAsync: true, //默认异步上传
+                showUpload: true, //是否显示上传按钮
+                showRemove: true, //显示移除按钮
+                showPreview: true, //是否显示预览
+                //showCaption:false,//是否显示标题
+                browseClass: "btn btn-primary", //按钮样式    
+                dropZoneEnabled: false,//是否显示拖拽区域
+                //zoomModalHeight:100,
+                //minImageWidth: 50, //图片的最小宽度
+                //minImageHeight: 50,//图片的最小高度
+                //maxImageWidth: 1000,//图片的最大宽度
+                //maxImageHeight: 1000,//图片的最大高度
+                maxFileSize: 0,//单位为kb，如果为0表示不限制文件大小
+                //minFileCount: 0,
+                maxFileCount: 10, //表示允许同时上传的最大文件个数
+                enctype: 'multipart/form-data',
+                validateInitialCount: true,
+                previewFileIcon: '<i class="glyphicon glyphicon-king"></i>',
+                msgFilesTooMany: "选择上传的文件数量{n} 超过允许的最大数值{m}！"
+            });
+            $("#fileupload").on("fileuploaded", function (event, data, previewId, index) {
+                $("#myModal").modal('hide');
+                window.location.reload();
+            });
+
+            //按钮点击
+            $('#myScrollspy li a').click(function () {
+                window.location.href = '/userHome?filetype=' + $(this).parent().attr("id");
+            });
+            $('#' + [[${session.filetype}]]).addClass('active');
+            $('.pre-scrollable').css('max-height', $(document).height() * 0.81);
+        });
+    </script>
+</head>
+<body>
+<header th:include="commons::header"></header>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-2 col-sm-2 col-lg-1" id="myScrollspy">
+            <ul class="nav nav-pills nav-stacked">
+                <li id="all"><a href="javascript:void(0)">全部</a></li>
+                <li id="photos"><a href="javascript:void(0)">图片</a></li>
+                <li id="docs"><a href="javascript:void(0)">文档</a></li>
+                <li id="videos"><a href="javascript:void(0)">视频</a></li>
+                <li id="musics"><a href="javascript:void(0)">音乐</a></li>
+                <li id="others"><a href="javascript:void(0)">其他</a></li>
+            </ul>
+        </div>
+        <div class="col-xs-10 col-lg-11 col-sm-10">
+            <div class="">
+                <div class="row">
+                    <div class="dropdown col-lg-1 col-sm-3 col-xs-3">
+                        <button type="button"
+                                class="btn btn-primary btn-sm dropdown-toggle"
+                                id="dropdownMenu1" data-toggle="dropdown">
+                            <span class="glyphicon glyphicon-cloud-upload">文件上传</span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu"
+                            aria-labelledby="dropdownMenu1">
+                            <li role="presentation"><a class="btn" data-toggle="modal"
+                                                       href="#UploadModal"> 单文件上传 </a></li>
+                            <li role="presentation"><a class="btn" data-toggle="modal"
+                                                       data-target="#myModal2"> 文件夹上传 </a></li>
+                        </ul>
+                    </div>
+                    <div class="modal fade" id="UploadModal" tabindex="-1" role="dialog"
+                         aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">×
+                                    </button>
+                                    <h4 class="modal-title" id="myModalLabel">上传文件</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <input id="fileupload" name="file" type="file" multiple="multiple"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <!-- <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary">提交更改</button> -->
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+                    <div class="col-lg-1 col-sm-3 col-xs-3">
+                        <button type="button" class="btn btn-primary btn-sm"
+                                href="#offlineDownloadModal" data-toggle="modal"> 离线下载
+                        </button>
+                    </div>
+                    <div class="modal fade" id="offlineDownloadModal" tabindex="-1" role="dialog"
+                         aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"
+                                            aria-hidden="true">×
+                                    </button>
+                                    <h4 class="modal-title" id="offlineDownloadLabel">离线下载</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <form th:action="@{/offLineDownload}"
+                                                  th:method="post">
+                                                <input id="offlineDownloadSrc" name="offlineDownloadSrc"
+                                                       class="form-control" type="text"/>
+                                                <span id="download" class="input-group-addon btn"
+                                                      onclick="document.forms[0].submit()">下载</span>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <!-- <button type="button" class="btn btn-default"
+                                    data-dismiss="modal">关闭</button>
+                                <button type="button" class="btn btn-primary">提交更改</button> -->
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <div class="col-lg-1 col-sm-3 col-xs-3">
+                        <button type="button" class="btn btn-primary btn-sm"
+                                onclick="window.location.href='/linkFiles'">更新列表
+                        </button>
+                    </div>
+                </div>
+                <div class="row clearfix pre-scrollable ">
+                    <div class="table-responsive " id="tb">
+                        <table class="table table-hover pre-scrollable">
+                            <thead>
+                            <tr>
+                                <th>文件名</th>
+                                <th>文件大小</th>
+                                <th>修改日期</th>
+                                <th>下载文件</th>
+                                <th>是否共享</th>
+                                <th>操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="efile:${pageInfo.list}"
+                                th:class="${efileStat.even?'success':'warning'}">
+                                <td id="id" hidden="hidden" th:text="${efile.id}"></td>
+                                <td><a class="btn" th:onclick="openfile([[${efile.filepath}]],[[${efile.filename}]],[[${efile.id}]])">
+                                    <div th:switch="${efile.filename.substring(efile.filename.lastIndexOf('.')+1,efile.filename.length())}">
+                                        <span th:case="mp4" class="glyphicon glyphicon-hd-video"></span>
+                                        <span th:case="mp3" class="glyphicon glyphicon-play-music"></span>
+
+                                        <span th:case="jpg" class="glyphicon glyphicon-picture"></span>
+                                        <span th:case="png" class="glyphicon glyphicon-picture"></span>
+
+                                        <span th:case="'txt'" class="glyphicon glyphicon-file"></span>
+                                        <span th:case="'pdf'" class="glyphicon glyphicon-file"></span>
+                                        <span th:case="'doc'" class="glyphicon glyphicon-file"></span>
+                                        <span th:text="${efile.filename }">文件名</span>
+                                    </div>
+
+                                </a></td>
+                                <td>
+                                    <div th:if="${efile.filesize>1048576}">
+                                        <span th:text="${#numbers.formatDecimal(efile.filesize/1048576,0,1)}"></span>
+                                        G
+                                    </div>
+                                    <div th:unless="${efile.filesize>1048576}">
+                                        <div th:if="${efile.filesize>1024}">
+                                            <span th:text="${#numbers.formatDecimal(efile.filesize/1024,0,1)}"></span>
+                                            M
+                                        </div>
+                                        <div th:unless="${efile.filesize>1024}">
+                                            <span th:text="${#numbers.formatDecimal(efile.filesize,0,1)}"></span>
+                                            k
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span th:text="${#dates.format(efile.createtime,'yyyy-MM-dd HH:mm')}"></span>
+                                </td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-xs"
+                                            th:onclick="'downloadfile(\''+${efile.id}+'\')'">
+                                        <span class="glyphicon glyphicon-download-alt">下载</span>
+                                    </button>
+                                </td>
+                                <td><select class="form-control input-sm" id="${efile.id}"
+                                            th:onchange="|change(${efile.id})|">
+                                    <option value="0" th:selected="${efile.canshare==0 }">私有</option>
+                                    <option value="1" th:selected="${efile.canshare==1 }">共享</option>
+                                </select></td>
+                                <td>
+                                    <button type="button" class="btn btn-danger btn-xs"
+                                            th:onclick="|godelete(${efile.id})|">
+                                        <span class="glyphicon glyphicon-trash"></span>删除
+                                    </button>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:inline="javascript">
+    function openfile(filepath, filename, id) {
+        filepath = filepath.replace(/\\\\/g, "/");
+        var str = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
+        if ('mp4' === str || 'ogg' === str) {
+            window.location.href = '/videoPlay?id=' + id;
+        } else if ('mp3' === str || 'ogg' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        } else if ('txt' === str || 'doc' === str || 'pdf' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        } else if ('jpg' === str || 'jpeg' === str || 'png' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        } else {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        }
+    }
+
+    function downloadfile(id) {
+        window.location.href = "/download?id=" + id;
+    }
+
+    function godelete(fileid) {
+        var r = confirm("确认删除文件？");
+        if (r === true) {
+            window.location.href = '/deletefile?id=' + fileid;
+        } else {
+            return false;
+        }
+    }
+
+    function change(fileid) {
+        var r = confirm("如果设置共享，您的文件将可以被其他人搜索到");
+        if (r === true) {
+            window.location.href = '/changefilestatus?id=' + fileid;
+        } else {
+            location.reload();
+        }
+    }
+
+</script>
+    
+</body>
+</html>
+
+
+
+
+
+
+
+

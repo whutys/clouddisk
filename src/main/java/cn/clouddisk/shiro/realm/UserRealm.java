@@ -45,7 +45,7 @@ public class UserRealm extends AuthorizingRealm {
             info.addStringPermission("*:*");
         } else {
             perms = permServiceImpl.selectPermKeysByUserId(user.getId());
-            roles = roleServiceImpl.selectRoleKeysByUserId(user.getId());
+            roles = roleServiceImpl.getRoleKeysByUserId(user.getId());
             info.addRoles(roles);
             info.addStringPermissions(perms);
         }

@@ -1,8 +1,8 @@
 package cn.clouddisk.controller;
 
 import cn.clouddisk.entity.User;
-import cn.clouddisk.service.impl.UserRoleServiceImpl;
 import cn.clouddisk.service.impl.RoleServiceImpl;
+import cn.clouddisk.service.impl.UserRoleServiceImpl;
 import cn.clouddisk.service.impl.UserServiceImpl;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
@@ -32,7 +32,7 @@ public class UserController {
     @GetMapping()
     public String user(User user, Model model){
         List<User> list = userService.findUserList(user);
-        list.forEach((each)->each.setRoles(roleService.selectRoleByUserId(each.getId())));
+        list.forEach((each)->each.setRoles(roleService.getRoleByUserId(each.getId())));
         model.addAttribute("users", list);
         return "user/user";
     }

@@ -1,5 +1,6 @@
 package cn.clouddisk.controller;
 
+import cn.clouddisk.service.IFileService;
 import cn.clouddisk.service.IPlayListService;
 import cn.clouddisk.utils.CrawlUtils;
 import cn.clouddisk.utils.ShiroUtils;
@@ -12,8 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
+import java.util.HashMap;
 import java.util.Map;
 
 @RequiresUser
@@ -21,22 +21,20 @@ import java.util.Map;
 public class VideoController {
 
     private IPlayListService playListService;
+    private IFileService fileService;
 
     @Autowired
-    public VideoController(IPlayListService playListService) {
+    public VideoController(IPlayListService playListService, IFileService fileService) {
         this.playListService = playListService;
+        this.fileService = fileService;
     }
 
     @GetMapping("/videoPlay")
-    public String videoPlay(String username, String filename, Model model) {
-        try {
-            filename = URLDecoder.decode(filename, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+    public String videoPlay(int id, Model model) {
+        Map fileInfo = fileService.findFileById(id);
         model.addAttribute("url",
-                "\\fileDir\\" +  username + File.separator + filename);
-        model.addAttribute("filename", filename);
+                "/fileDir/" + fileInfo.get("username") + File.separator + fileInfo.get("filename"));
+        model.addAttribute("filename", fileInfo.get("filename"));
         return "videoplay";
     }
 
@@ -55,6 +53,20 @@ public class VideoController {
             }
         }
         model.addAttribute("videoInfo", videoInfo);
+        String[] apis = {"http://jiexi.92fz.cn/player/vip.php?url=", "http://jqaaa.com/jx.php?url=",
+                "http://api.bbbbbb.me/jx/?url=", "http://api.hlglwl.com/jx.php?url=",
+                "http://vip.jlsprh.com/index.php?url=", "http://app.baiyug.cn:2019/vip/?url="};
+        model.addAttribute("apis", apis);
+        Map<String, String> searchengines = new HashMap<String, String>() {
+            {
+                put("爱奇艺", "https://so.iqiyi.com/so/q_");
+                put("优酷", "https://so.youku.com/search_video/q_");
+                put("腾讯视频", "https://v.qq.com/x/search/?q=");
+                put("搜狐视频", "https://so.tv.sohu.com/mts?wd=");
+                put("乐视视频", "http://so.le.com/s?wd=");
+            }
+        };
+        model.addAttribute("searchengines",searchengines);
         return "vip_analysis";
     }
 

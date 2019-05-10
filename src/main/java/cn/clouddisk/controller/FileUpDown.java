@@ -16,10 +16,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +40,7 @@ public class FileUpDown {
 
     @ResponseBody
     @PostMapping(value = "/uploadfile")
-    public Map<String, Object> upLoad(@RequestParam("file") MultipartFile multipartFile,UserFile userFile) {
+    public Map<String, Object> upLoad(@RequestParam("file") MultipartFile multipartFile, UserFile userFile) {
         String fileFileName = multipartFile.getOriginalFilename();
         Map<String, Object> map = new HashMap<>();
         User user = ShiroUtils.getUser();
@@ -113,15 +112,15 @@ public class FileUpDown {
     public String downLoad(HttpServletRequest request, HttpServletResponse response, int id) {
         FileInputStream in = null;
         try {
-            UserFile userFile = fileService.findFileById(id); // 相对于/upload的路径
-            if (userFile == null ) {
+            Map fileInfo = fileService.findFileById(id); // 相对于/upload的路径
+            if (fileInfo == null) {
                 request.setAttribute("message", "对不起，您要下载的资源已被删除");
                 return "message";
             }
-            File file = new File(fileDir + File.separator + userFile.getFilepath() + File.separator + userFile.getFilename());
+            File file = new File(fileDir + File.separator + fileInfo.get("filepath") + File.separator + fileInfo.get("filename"));
             // 通知浏览器以下载方式打开
             response.setHeader("content-disposition",
-                    "attachment;filename=" + URLEncoder.encode(userFile.getFilename(), "UTF-8"));
+                    "attachment;filename=" + URLEncoder.encode((String) fileInfo.get("filename"), "UTF-8"));
 
             in = new FileInputStream(file);
             int len;
@@ -142,5 +141,33 @@ public class FileUpDown {
                 e.printStackTrace();
             }
         }
+    }
+
+    @ResponseBody
+    @PostMapping("/offLineDownload")
+    public String offLineDownload(String offlineDownloadSrc) {
+        try {
+            URL url = new URL(offlineDownloadSrc);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            String filename;
+            String headerField = urlConnection.getHeaderField("Content-Disposition");
+            if (headerField != null)
+                filename = headerField.substring(21);
+            else filename = offlineDownloadSrc.substring(offlineDownloadSrc.lastIndexOf("/") + 1);
+            InputStream is = urlConnection.getInputStream();
+            File file = new File(fileDir + ShiroUtils.getUsername() + "/" + filename);
+            FileOutputStream fos = new FileOutputStream(file);
+            byte[] buff = new byte[4096];
+            int len = 0;
+            while ((len = is.read(buff)) != -1) {
+                fos.write(buff, 0, len);
+            }
+            fos.close();
+            is.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "defeat";
+        }
+        return "success";
     }
 }

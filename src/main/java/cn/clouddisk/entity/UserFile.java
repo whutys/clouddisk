@@ -21,5 +21,5 @@ public class UserFile extends BaseEntity {
     private long filesize;
     private Date createtime;
     private int canshare;
-
+    private int owner;
 }

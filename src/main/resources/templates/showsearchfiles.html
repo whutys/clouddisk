@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>搜索结果</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+    <script type="text/javascript" th:src="@{/static/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/css/bootstrap.css}"/>
+    <script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#pagesize")[0].selectedIndex = ${pageInfo.pageSize/5-1};
+        })
+    </script>
+</head>
+<body>
+<header th:include="commons::header"></header>
+
+<div class="col-lg-offset-1">
+    <div class="page-header">
+        <h3>搜索结果</h3>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-4">
+            关键词：<label id="searchcontent">${searchcontent }</label>
+        </div>
+        <div class="col-lg-2 col-lg-offset-6">共[${pageInfo.total}]条记录</div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+            <tr>
+                <th>文件名</th>
+                <th>文件大小</th>
+                <th>上传者</th>
+                <th>修改日期</th>
+                <th>下载文件</th>
+            <tr>
+            </thead>
+            <tbody>
+            <tr th:each="efile,stat:${pageInfo.list}" class="${stat.even?'success':'warning'}">
+                <div id="id" hidden>${efile.id}</div>
+                <td><a class="btn"
+                       onclick="openfile('${efile.filepath}','${efile.filename }','${efile.id }')">
+                    <div th:switch="${efile.filename.substring(efile.filename.lastIndexOf('.')+1,efile.filename.length())}">
+                        <span th:case="mp4" class="glyphicon glyphicon-hd-video"></span>
+
+                        <span th:case="mp3" class="glyphicon glyphicon-play-music"></span>
+
+                        <span th:case="jpg||png" class="glyphicon glyphicon-picture"></span>
+
+                        <span th:case="text||pdf||doc" class="glyphicon glyphicon-file"></span>
+                    </div>
+                    ${efile.filename }
+                </a></td>
+                <td>
+                    <div th:if="${efile.filesize>1048576}">
+                        <span th:text="${#numbers.formatDecimal(efile.filesize/1048576,0,1)}"></span>
+                        G
+                    </div>
+                    <div th:unless="${efile.filesize>1048576}">
+                        <div th:if="${efile.filesize>1024}">
+                            <span th:text="${#numbers.formatDecimal(efile.filesize/1024,0,1)}"></span>
+                            M
+                        </div>
+                        <div th:unless="${efile.filesize>1024}">
+                            <span th:text="${#numbers.formatDecimal(efile.filesize,0,1)}"></span>
+                            k
+                        </div>
+                    </div>
+                </td>
+                <td>${efile.filepath }</td>
+                <td>
+                    <span th:text="${#dates.format(efile.createtime,'yyyy-MM-dd HH:mm')}"></span>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-primary btn-xs"
+                            onclick="downloadfile('${efile.id}','${efile.filename }')">
+                        <span class="glyphicon glyphicon-download-alt"></span>下载
+                    </button>
+                </td>
+            <tr>
+                </th>
+            </tbody>
+        </table>
+    </div>
+</div>
+<ul class="pager">
+
+    <li>每页 <select title="选择每页记录数"
+                   onchange="gotoPage(${pageInfo.pageSize})" id="pageSize">
+        <option value="5">5
+        </option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+    </select>条
+    </li>
+    <li>共[${pageInfo.pages}]页</li>
+    <li><a href="#" onclick="gotoPage(${pageInfo.navigateFirstPage})">首页</a></li>
+    <li>
+        <a href="#"
+           th:onclick="${pageInfo.isFirstPage}?'':gotoPage(${pageInfo.prePage})">&laquo;</a>
+    </li>
+    <span th:each="pageNum:${pageInfo.navigatepageNums}">
+                <li th:if="${pageNum==pageInfo.pageNum }"><span>${pageNum }</span></li>
+                <li th:unless="${pageNum==pageInfo.pageNum }"><a href="#"
+                                                                 onclick="gotoPage(${pageNum})">${pageNum}</a></li>
+        </span>
+    <li>
+        <a href="#"
+           th:onclick="${pageInfo.isLastPage}?'':gotoPage(${pageInfo.nextPage})">&raquo;</a>
+    </li>
+    <li>跳转至第<input type="text" style="width: 2%;" maxlength="5"
+                   id="pageNum" onblur="gotoPageOn()"/>页
+    </li>
+</ul>
+
+<script type="text/javascript">
+    function openfile(filepath, filename, id) {
+        var str = filename.substring(filename.lastIndexOf('.') + 1, filename.length);
+        filename = encodeURI(encodeURI(filename));
+        if ('mp4' === str || 'ogg' === str) {
+            window.location.href = '${pageContext.request.contextPath}/videoPlay?id=' + id;
+        } else if ('mp3' === str || 'ogg' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        } else if ('txt' === str || 'doc' === str || 'pdf' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        } else if ('jpg' === str || 'jpeg' === str || 'png' === str) {
+            window.location.href = '/fileDir/' + filepath + '/' + filename;
+        }
+    }
+
+    function downloadfile(id) {
+        window.location.href = '${pageContext.request.contextPath}/download?id=' + id;
+    }
+
+    function gotoPage(pageNum) {
+        var pageSize = document.getElementById("pageSize").value;
+        var searchcontent = $("#searchcontent").text();
+        window.location.href = '${pageContext.request.contextPath }/searchfile?pageNum=' + pageNum + '&pageSize=' + pageSize + '&searchcontent=' + searchcontent;
+    }
+
+    function gotoPageOn() {
+        var pageNum = document.getElementById("pageNum").value.trim();
+        if (pageNum === "") return;
+
+        var pageSize = document.getElementById("pageSize").value;
+        var searchcontent = $("#searchcontent").text();
+
+        window.location.href = '${pageContext.request.contextPath }/searchfile?pageNum=' + pageNum + '&pageSize=' + pageSize + '&searchcontent=' + searchcontent;
+    }
+
+</script>
+</body>
+</html>

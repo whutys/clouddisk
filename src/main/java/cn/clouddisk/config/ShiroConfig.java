@@ -1,5 +1,6 @@
 package cn.clouddisk.config;
 
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import cn.clouddisk.shiro.realm.UserRealm;
 import cn.clouddisk.shiro.web.filter.LogoutFilter;
 import cn.clouddisk.utils.StringUtils;
@@ -196,5 +197,10 @@ public class ShiroConfig {
 
     private String onlineSessionFilter() {
         return null;
+    }
+//    shiro thymeleaf
+    @Bean(name="shiroDialect")
+    public ShiroDialect shiroDialect() {
+        return new ShiroDialect();
     }
 }

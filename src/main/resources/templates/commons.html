@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+    <script type="text/javascript" th:src="@{/static/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/css/bootstrap.css}"/>
+    <script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<header th:fragment="header">
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#example-navbar-collapse">
+                <span class="sr-only">切换导航</span> <span class="icon-bar"></span> <span
+                    class="icon-bar"></span> <span class="icon-bar"></span>
+            </button>
+            <a shiro:hasRole="admin" class="navbar-brand" th:href="@{/user}">管理员</a>
+            <a shiro:lacksRole="admin" class="navbar-brand" th:href="@{/}">410云盘</a>
+        </div>
+        <div class="collapse navbar-collapse" id="example-navbar-collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                        工具
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a th:href="@{/vipPlayer}">Vip视频解析</a></li>
+                        <li class="divider"></li>
+                        <li><a th:href="@{/chat}">聊天室</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">其他功能</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#">待加入</a></li>
+                    </ul>
+                </li>
+                <li shiro:user=""><a th:href="@{/autoLogin}"><span
+                        class="glyphicon glyphicon-user"></span>
+                    <shiro:principal property="nickname"/>
+                </a></li>
+                <li shiro:user="">
+                    <a th:href="@{/signOut}"><span
+                            class="glyphicon glyphicon-log-out"></span>退 出</a></li>
+                <li shiro:user="" shiro:lacksRole="vip"><a href="#"><span class="glyphicon glyphicon-log-out"></span>注册VIP</a>
+                </li>
+                <li shiro:guest=""><a th:href="@{/logIn}"><span
+                        class="glyphicon glyphicon-log-in"></span>登录</a></li>
+                <li shiro:guest=""><a th:href="@{/register}"><span
+                        class="glyphicon glyphicon-log-in"></span>注册</a></li>
+                <li><a th:href="@{/help}"><span
+                        class="glyphicon glyphicon-info-sign"></span>帮助</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>
+</body>
+</html>

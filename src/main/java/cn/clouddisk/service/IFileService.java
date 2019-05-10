@@ -10,7 +10,7 @@ public interface IFileService {
 
     int countShareFiles(String searchcontent);
 
-    UserFile findFileById(int id);
+    Map<String,Object> findFileById(int id);
 
     Integer insertFile(UserFile file);
 
@@ -18,7 +18,7 @@ public interface IFileService {
 
     int countUserFiles(UserFile userFile);
 
-    void updateFileById(UserFile userFile);
+    void updateFileById(Map fileInfo);
 
     void deleteFileById(int id);
 

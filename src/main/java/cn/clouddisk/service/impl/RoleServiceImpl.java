@@ -14,7 +14,7 @@ public class RoleServiceImpl implements IRoleService {
     private RoleMapper roleMapper;
 
     @Override
-    public List<String> selectRoleKeysByUserId(int userId) {
+    public List<String> getRoleKeysByUserId(int userId) {
         List<Role> roles = roleMapper.selectRoleByUserId(userId);
         List<String> rolesList = new ArrayList<>();
         for (Role role : roles) {
@@ -32,7 +32,7 @@ public class RoleServiceImpl implements IRoleService {
     }
 
     @Override
-    public List<Role> selectRoleByUserId(int userId) {
+    public List<Role> getRoleByUserId(int userId) {
         return roleMapper.selectRoleByUserId(userId);
     }
 }

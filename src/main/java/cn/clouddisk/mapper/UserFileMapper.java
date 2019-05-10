@@ -12,7 +12,7 @@ public interface UserFileMapper {
 
     int countSharedFile(String searchcontent);
 
-    UserFile getFileById(@Param("id") int id);
+    Map<String,Object> getFileById(@Param("id") int id);
 
     Integer insertUserFile(UserFile file);
 
@@ -20,7 +20,7 @@ public interface UserFileMapper {
 
     int countUserFiles(UserFile userFile);
 
-    void updateFileById(UserFile userFile);
+    void updateFileById(Map fileInfo);
 
     void deleteFileById(int id);
 

@@ -1,9 +1,7 @@
 package cn.clouddisk.utils.TestFunction;
 
-import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
-import com.sun.jna.ptr.IntByReference;
 import com.sun.jna.win32.StdCallLibrary;
 
 public class ThunderJNA {
@@ -14,7 +12,7 @@ public class ThunderJNA {
     public interface CLibrary extends StdCallLibrary {
         CLibrary INSTANCE = (CLibrary)
 //                Native.loadLibrary("LibSupervisor",
-                Native.loadLibrary((Platform.isWindows() ? "XLDownload" : "c"),
+                Native.load((Platform.isWindows() ? "XLDownload" : "c"),
                         CLibrary.class);
         public boolean XLInitDownloadEngine();
 //        IntByReference init();

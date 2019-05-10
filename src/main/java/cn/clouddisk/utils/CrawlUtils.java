@@ -2,11 +2,6 @@ package cn.clouddisk.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.gargoylesoftware.htmlunit.BrowserVersion;
-import com.gargoylesoftware.htmlunit.NicelyResynchronizingAjaxController;
-import com.gargoylesoftware.htmlunit.Page;
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,16 +9,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 
-import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.ref.SoftReference;
-import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -57,8 +48,9 @@ public class CrawlUtils {
 //        url = "https://so.iqiyi.com/so/q_时间";
 //        String text = "【安全防护】 天地伟业技术有限公司";
 //        System.out.println(Integer.parseInt("2345"));
-        url="()";
-        StringBuilder sb = new StringBuilder(url);sb.insert(2,"()");
+        url = "()";
+        StringBuilder sb = new StringBuilder(url);
+        sb.insert(2, "()");
         System.out.println(sb.toString());
     }
 
@@ -193,5 +185,38 @@ public class CrawlUtils {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void pic() {
+        int pageNum = 5;
+        for (int i = 1; i <= pageNum; i++) {
+
+            Connection connect = Jsoup.connect("https://www.ivsky.com/tupian/huo_t1204/index_" + i + ".html");
+            Document document = null;
+            try {
+                document = connect.get();
+
+                Elements imgs = document.body().getElementsByTag("img");
+                for (Element img : imgs) {
+                    String src = img.attr("src");
+//            System.out.println(src);
+                    URL url = new URL("https:" + src);
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    InputStream is = urlConnection.getInputStream();
+                    File file = new File("F:/pics/" + src.substring(src.lastIndexOf("/") + 1));
+                    FileOutputStream fos = new FileOutputStream(file);
+                    byte[] buff = new byte[1024];
+                    int len = 0;
+                    while ((len = is.read(buff)) != -1) {
+                        fos.write(buff, 0, len);
+                    }
+                    fos.close();
+                    is.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

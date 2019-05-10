@@ -1,18 +1,15 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>${filename }</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title th:text="${filename }">电影标题</title>
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="static/css/bootstrap.css"/>
-    <link type="text/css" rel="stylesheet" href="static/css/video-js.min.css"/>
-    <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="static/js/video.min.js"></script>
+          content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" th:href="@{/static/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/static/css/video-js.min.css}"/>
+    <script type="text/javascript" th:src="@{/static/js/jquery-3.3.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/video.min.js}"></script>
     <script>
         videojs.options.flash.swf = "js/video-js.swf";
     </script>
@@ -43,29 +40,30 @@
     </script>
 </head>
 <body>
-<%@include file="/head.jsp"%>
+<header th:include="commons::header"></header>
+
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
             <div class="form-group">
-                <input id="source" type="text" class="col-lg-9"> <label
+                <input id="source" type="text" class="col-lg-9"/> <label
                     id="bt" class="col-lg-1">自定义播放</label>
             </div>
         </div>
     </div>
-    <br>
+    <br/>
     <div class="row">
         <div class="col-lg-10 col-lg-offset-1">
             <div>
-                <h4>${filename}</h4>
+                <h4 th:text="${filename}">电影标题</h4>
             </div>
             <div class="video-area" style="height: 600px">
                 <video id="myvideo"
-                       class="video-js vjs-big-play-centered vjs-fluid" controls
+                       class="video-js vjs-big-play-centered vjs-fluid" controls="controls"
                        preload="auto" data-setup="{}">
-                    <source src="${url}" type='video/mp4'/>
-                    <source src="${url}" type='video/webm'/>
-                    <source src="${url}" type='video/ogg'/>
+                    <source th:src="${url}" type='video/mp4'/>
+                    <source th:src="${url}" type='video/webm'/>
+                    <source th:src="${url}" type='video/ogg'/>
                     <!-- <track kind="captions" src="demo.captions.vtt"
                 srclang="en" label="English"> </track>Tracks need an ending tag thanks to IE9
             <track kind="subtitles" src="demo.captions.vtt" srclang="en"

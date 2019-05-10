@@ -1,24 +1,20 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8" %>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>注册</title>
 
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
-    <link rel="stylesheet" href="static/css/bootstrap.css"/>
-    <link rel="stylesheet" href="static/css/bootstrapValidator.css"/>
-
-    <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="static/js/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" th:src="@{/static/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/css/bootstrap.css}"/>
+    <script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/css/bootstrapValidator.css}"/>
+    <script type="text/javascript" th:src="@{/static/js/bootstrapValidator.min.js}"></script>
 </head>
 <body>
-<%@include file="/head.jsp" %>
+<header th:include="commons::header"></header>
 <h4>需要邀请码请联系管理员</h4>
 <div class="container">
     <div class="row">
@@ -28,60 +24,60 @@
                 <h2>注册</h2>
             </div>
 
-            <form:form id="registerForm" modelAttribute="user" method="post"
+            <form id="registerForm" th:object="${user}" th:method="post"
                        class="form-horizontal"
-                       action="${pageContext.request.contextPath }/register">
+                       th:action="@{/register }">
                 <div class="form-group">
                     <label class="col-lg-3 control-label">昵称</label>
                     <div class="col-lg-5">
-                        <input path="nickname" type="text" class="form-control"
-                                    name="nickname" placeholder="请输入昵称" value="${user.nickname }"/>
-                        <form:errors path="nickname"/>
+                        <input th:field="*{nickname}" th:value="*{nickname}" type="text" class="form-control"
+                               name="nickname" placeholder="请输入昵称"/>
+                        <span th:errors="*{nickname}"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-lg-3 control-label">用户名</label>
                     <div class="col-lg-5">
-                        <input path="username" type="text" class="form-control"
-                               name="username" placeholder="请输入用户名" value="${user.username }"/>
-                        <form:errors path="username"/>
+                        <input th:field="*{username}" th:value="*{username}" type="text" class="form-control"
+                        name="username" placeholder="请输入用户名"/>
+                        <span th:errors="*{username}"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-lg-3 control-label">密码</label>
                     <div class="col-lg-5">
-                        <input path="password" type="password" class="form-control"
-                               name="password" placeholder="请输入密码" value="${user.password }"/>
-                        <form:errors path="password"/>
+                        <input th:field="*{password}" th:value="*{password}" type="password" class="form-control"
+                        name="password" placeholder="请输入密码"/>
+                        <span th:errors="*{password}"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-lg-3 control-label">确认密码</label>
                     <div class="col-lg-5">
-                        <input type="password" class="form-control"
-                               name="confirmPassword" placeholder="请输入密码"/>
-                        <form:errors path="confirmPassword"/>
+                        <input th:field="*{confirmPassword}" th:value="*{confirmPassword}" type="password" class="form-control"
+                        name="confirmPassword" placeholder="请输入密码"/>
+                        <span th:errors="*{confirmPassword}"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-lg-3 control-label">电子邮箱</label>
                     <div class="col-lg-5">
-                        <input path="email" type="text" class="form-control" name="email"
-                               placeholder="请输入电子邮箱" value="${user.email }"/>
-                        <form:errors path="email"/>
+                        <input th:field="*{email}" th:value="*{email}" type="text" class="form-control" name="email"
+                        placeholder="请输入电子邮箱"/>
+                        <span th:errors="*{email}"></span>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="col-lg-3 control-label">邀请码</label>
                     <div class="col-lg-5">
-                        <input type="text" class="form-control" name="inviteCode"
-                               placeholder="请输入邀请码"/>
-                        <form:errors path="inviteCode"/>
+                        <input th:field="*{inviteCode}" th:value="*{inviteCode}" type="text" class="form-control" name="inviteCode"
+                        placeholder="请输入邀请码"/>
+                        <span th:errors="*{inviteCode}"></span>
                     </div>
                 </div>
 
@@ -102,7 +98,7 @@
                         <button type="button" class="btn btn-info" id="resetBtn">重置</button>
                     </div>
                 </div>
-            </form:form>
+            </form>
         </div>
         <!-- :form -->
     </div>
@@ -157,7 +153,7 @@
                                             message: '用户名只能由字母数字小数点和下划线组成'
                                         },
                                         remote: {
-                                            url: '${pageContext.request.contextPath }/checkUsername',
+                                            url: '/checkUsername',
                                             message: '用户名已被注册'
                                         },
                                         different: {
@@ -209,7 +205,7 @@
                                 inviteCode: {
                                     validators: {
                                         remote: {
-                                            url: '${pageContext.request.contextPath }/checkInviteCode',
+                                            url: '/checkInviteCode',
                                             message: '邀请码错误'
                                         },
                                         notEmpty: {
@@ -221,16 +217,15 @@
                                     validators: {
                                         callback: {
                                             message: '答案错误',
-                                            callback: function (
-                                                value,
-                                                validator) {
+                                            callback: function (value,
+                                                                validator) {
                                                 var items = $(
                                                     '#captchaOperation')
                                                     .html()
                                                     .split(
                                                         ' '), sum = parseInt(items[0])
                                                     + parseInt(items[2]);
-                                                return value == sum;
+                                                return value === sum;
                                             }
                                         }
                                     }

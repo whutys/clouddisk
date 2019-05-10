@@ -27,7 +27,7 @@ import java.util.*;
 //@RequestMapping("/jsp")
 public class FileController {
     @Value("${fileDir}")
-    private String storePath; // 存储目录 E:\\BaiduYunDownload
+    private String storePath; // 存储目录
     @Value("${category}")
     private String category;//文件夹
 
@@ -42,9 +42,10 @@ public class FileController {
     public String deleteFile(HttpServletRequest request, int id) {
         // 判断该用户是否拥有此文件
         try {
-            String username = fileService.findFileById(id).getFilepath();
+            Map fileInfo = fileService.findFileById(id);
+            String username = (String) fileInfo.get("username");
             String login_user = ShiroUtils.getUsername();
-            String filename = fileService.findFileById(id).getFilename(); // 查出文件名
+            String filename = (String) fileInfo.get("filename"); // 查出文件名
             if (username != null && login_user.equals(username)) {
                 // 从硬盘上删除文件
                 String storepath = storePath + login_user + File.separator + filename;
@@ -56,12 +57,12 @@ public class FileController {
                 return "redirect:/userHome";
             } else { // 不通过，可能是人为篡改数据，转发至全局消息页面
                 request.setAttribute("globalmessage", "该文件可能不属于你");
-                return "forward:/message.jsp";
+                return "forward:/message.html";
             }
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("globalmessage", "该文件可能不属于你");
-            return "forward:/message.jsp";
+            return "forward:/message.html";
         }
 
     }
@@ -69,10 +70,8 @@ public class FileController {
     @GetMapping(value = "/userHome")
     public String searchUserFiles(HttpServletRequest request) {
         // 根据用户查找出它所有的文件
-        String filepath;// file表的文件路径就是所属的用户的用户名
-        filepath = ShiroUtils.getUsername();
         Map<String, Object> map = new HashMap<>();
-        map.put("filepath", filepath);
+        map.put("owner", ShiroUtils.getUserId());
         String filetype = request.getParameter("filetype");
         if (filetype == null) {
             filetype = (String) request.getSession().getAttribute("filetype");
@@ -112,14 +111,16 @@ public class FileController {
     }
 
     @GetMapping("/changefilestatus")
-    public String changeFileStatus(UserFile userFile, HttpServletRequest request) {
+    public String changeFileStatus(int id, HttpServletRequest request) {
         // 把canshare修改进数据库
         try {
             // 检查该文件是否属于该用户,否则不允许修改文件状态
-            String username = fileService.findFileById(userFile.getId()).getFilepath();
+            Map fileInfo = fileService.findFileById(id);
+            String username = (String) fileInfo.get("username");
             String login_user = ShiroUtils.getUsername();
             if (username != null && login_user.equals(username)) {
-                fileService.updateFileById(userFile);
+                fileInfo.replace("canshare",!(boolean)fileInfo.get("canshare"));
+                fileService.updateFileById(fileInfo);
             } else { // 不通过，可能是人为篡改数据，转发至首页
                 request.setAttribute("globalmessage", "该文件可能不属于你");
                 return "/message";
@@ -138,16 +139,24 @@ public class FileController {
     public String linkFiles() {
         String username = ShiroUtils.getUsername();
         File file = new File(storePath + username);
-        Arrays.stream(file.listFiles()).forEach(eFile -> {
+        linkFiles(file);
+        return "redirect:/userHome";
+    }
+
+    public void linkFiles(File file) {
+        if (file.isDirectory()) {
+            Arrays.stream(file.listFiles()).forEach(this::linkFiles);
+        } else {
             UserFile userFile = new UserFile();
-            userFile.setFilename(eFile.getName());
-            userFile.setFilepath(username + "/");
+            userFile.setFilename(file.getName());
+            String path = file.getAbsolutePath();
+            userFile.setFilepath(path.substring(storePath.length(), path.lastIndexOf(File.separatorChar)).replaceAll("\\\\","/"));
+            userFile.setOwner(ShiroUtils.getUserId());
             if (fileService.countUserFiles(userFile) == 0) {
-                userFile.setFilesize(eFile.length() / 1024 + 1);
-                userFile.setCreatetime(new Date(eFile.lastModified()));
+                userFile.setFilesize(file.length() / 1024 + 1);
+                userFile.setCreatetime(new Date(file.lastModified()));
                 fileService.insertFile(userFile);
             }
-        });
-        return "redirect:/userHome";
+        }
     }
 }

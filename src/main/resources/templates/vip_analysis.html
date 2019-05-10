@@ -1,20 +1,15 @@
-<%@page import="java.util.HashMap" %>
-<%@page import="java.util.Map" %>
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-         pageEncoding="UTF-8" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <title>VIP播放器</title>
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <link rel="stylesheet" href="/static/css/bootstrap.css"/>
-    <link type="text/css" rel="stylesheet" href="/static/css/video-js.min.css"/>
-    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
-    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
-    <script type="text/javascript" src="/static/js/video.min.js"></script>
+          content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" th:href="@{/static/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/static/css/video-js.min.css}"/>
+    <script type="text/javascript" th:src="@{/static/js/jquery-3.3.1.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}"></script>
+    <script type="text/javascript" th:src="@{/static/js/video.min.js}"></script>
     <style type="text/css">
         .video-search, .video-area {
             position: relative;
@@ -31,30 +26,8 @@
     <script>
         videojs.options.flash.swf = "js/video-js.swf";
     </script>
-    <%
-        String[] apis = {"http://jiexi.92fz.cn/player/vip.php?url=", "http://jqaaa.com/jx.php?url=",
-                "http://api.bbbbbb.me/jx/?url=", "http://api.hlglwl.com/jx.php?url=",
-                "http://vip.jlsprh.com/index.php?url=", "http://app.baiyug.cn:2019/vip/?url="};
-        int n = 0;
-        pageContext.setAttribute("apis", apis);
-        Map<String, String> searchengines = new HashMap<String, String>() {
-            {
-                put("爱奇艺", "https://so.iqiyi.com/so/q_");
-                put("优酷", "https://so.youku.com/search_video/q_");
-                put("腾讯视频", "https://v.qq.com/x/search/?q=");
-                put("搜狐视频", "https://so.tv.sohu.com/mts?wd=");
-                put("乐视视频", "http://so.le.com/s?wd=");
-            }
-        };
-        pageContext.setAttribute("searchengines", searchengines);
-    %>
     <script type="text/javascript">
         $(function () {
-            $("#apis")[0].selectedIndex = 0;
-            $("#searchengine")[0].selectedIndex = 0;
-
-            var json={};
-            for (var index in json) {};
             //window.history.back(-1);
             $("#searchbt").click(function () {
                 var searchvalue = $("#searchValue").val();
@@ -67,27 +40,25 @@
             });
 
             $("#vipbt").click(function () {
-                var source = $("#vipSource").val();
+                var url = $("#vipSource").val();
                 var api = $("#apis").val();
                 $(".video-area").html('<iframe id="play-box" style="position: absolute" height="100%" width="100%" src='
                     + api
-                    + source
+                    + url
                     + ' frameborder="0" border="0" marginwidth="0" marginheight="0" scrolling="no" allowfullscreen="true"></iframe>');
-            });
-            $("#vipbt").click(function () {
-                var url = $("#vipSource").val();
+                //获取视频名
                 var htmlobj = $.ajax({
-                    url: "${pageContext.request.contextPath}/getTitle?url=" + url,
+                    url: "/getTitle?url=" + url,
                     async: false
                 });
                 $("title").text(htmlobj.responseText);
                 $("#title").text(htmlobj.responseText);
             });
             document.onkeydown = function (e) {
-                var ev = (typeof event != 'undefined') ? window.event : e;
-                if (ev.keyCode == 13 && document.activeElement.id == "searchValue") {
+                var ev = (typeof event !== 'undefined') ? window.event : e;
+                if (ev.keyCode === 13 && document.activeElement.id === "searchValue") {
                     $("#searchbt").click();
-                } else if (ev.keyCode == 13 && document.activeElement.id == "vipSource") {
+                } else if (ev.keyCode === 13 && document.activeElement.id === "vipSource") {
                     $("#vipbt").click();
                 }
             };
@@ -98,7 +69,7 @@
                 var list = '';
                 $.ajax({
                     type: "get",
-                    url: "${pageContext.request.contextPath}/getVideoItem?url=" + searchengine + encodeURI(encodeURI(searchValue)),
+                    url: "/getVideoItem?url=" + searchengine + encodeURI(encodeURI(searchValue)),
                     datatype: "json",
                     async: false,
                     success: function (data) {
@@ -115,43 +86,40 @@
         function playVideo(url) {
             $("#vipSource").val(url);
             $("#vipbt").click();
-        };
+        }
     </script>
 </head>
 <body>
-<%@include file="/head.jsp" %>
+<header th:include="commons::header"></header>
 <div class="container-fluid">
     <div class="col-lg-8 col-lg-offset-2">
         <div class="input-group">
             <span class="input-group-btn">
-            <select id="searchengine" class="btn btn-default dropdown-toggle"><c:forEach
-                    items="${searchengines}" var="searchengine">
-                <option value="${searchengine.value }">${searchengine.key }
-            </c:forEach>
+            <select id="searchengine" class="btn btn-default dropdown-toggle">
+                <option th:each="searchengine:${searchengines}" th:value="${searchengine.value }" th:text="${searchengine.key }"
+                        th:selected="${searchengineStat.first}">搜索引擎</option>
             </select>
             </span>
-            <input id="searchValue" type="text" class="form-control" onfocus="this.select()">
+            <input id="searchValue" type="text" class="form-control" onfocus="this.select()"/>
             <span id="searchbt" class="input-group-addon btn">视频搜索</span>
         </div>
     </div>
     <div class="col-lg-8 col-lg-offset-2">
         <div class="input-group">
             <div class="input-group-btn">
-                <select id="apis" class="btn btn-default dropdown-toggle"><c:forEach
-                        items="${apis }" var="api">
-                    <option value="${api }">解析${n=n+1 }</option>
-                </c:forEach>
+                <select  id="apis" class="btn btn-default dropdown-toggle">
+                    <option th:each="api:${apis }" th:value="${api }" th:text="'解析'+${apiStat.count }">解析地址</option>
                 </select>
             </div>
             <input id="vipSource" type="text" class="form-control" onfocus="this.select()"
-                   value="${videoInfo.get("videoAddress")}"> <span
+                   value="视频链接" th:value="${videoInfo.get('videoAddress')}"/><span
                 id="vipbt" class="input-group-addon btn">立即播放</span>
         </div>
     </div>
     <br>
     <div class="row">
         <div class="col-lg-6">
-            <h4 id="title">${videoInfo.get("videoName")}</h4>
+            <h4 id="title" th:text="${videoInfo.get('videoName')}">视频名称</h4>
             <div class="video-search"></div>
         </div>
         <div class="col-lg-6">

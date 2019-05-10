@@ -4,13 +4,11 @@ import cn.clouddisk.entity.User;
 import cn.clouddisk.mapper.UserMapper;
 import cn.clouddisk.service.IUserService;
 import cn.clouddisk.shiro.service.PasswordService;
-import org.apache.shiro.crypto.hash.Md5Hash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 
 @Service
 @Transactional

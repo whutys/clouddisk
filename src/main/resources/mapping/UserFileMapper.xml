@@ -27,7 +27,8 @@
             filepath,
             filesize,
             createtime,
-            canshare
+            canshare,
+            owner
         FROM file
         WHERE
             canshare = 1 AND filename LIKE '%${searchcontent}%'
@@ -42,7 +43,6 @@
             resultType="cn.clouddisk.entity.UserFile">
         SELECT * FROM file
         <trim prefix="where" prefixOverrides="and">
-            <if test="filepath!=null">AND filepath=#{filepath}</if>
             <if test="types!=null">
                 <choose>
                     <when test="others">
@@ -59,6 +59,7 @@
                     </otherwise>
                 </choose>
             </if>
+            AND owner=#{owner}
         </trim>
     </select>
 
@@ -70,6 +71,7 @@
         <trim prefix="where" prefixOverrides="and">
             <if test="filename!=null">and filename = #{filename}</if>
             <if test="filepath!=null">and filepath = #{filepath}</if>
+            <if test="owner!=0">and owner=#{owner}</if>
         </trim>
     </select>
 
@@ -85,10 +87,19 @@
 
     <!-- 根据文件id查找文件 -->
     <select id="getFileById" parameterType="int"
-            resultType="UserFile">
-        SELECT *
-        FROM file
-        WHERE id = #{id}
+            resultType="java.util.Map">
+        SELECT
+            f.id,
+            f.filename,
+            f.filepath,
+            f.filesize,
+            f.createtime,
+            f.canshare,
+            u.username
+        FROM file f
+            LEFT JOIN USER u
+                ON f.owner = u.id
+        WHERE f.id = #{id}
     </select>
 
     <!-- 把用户上传的文件信息写入数据库 -->
@@ -98,12 +109,12 @@
                    resultType="int">
             SELECT last_insert_id()
         </selectKey>
-        INSERT INTO file (filename,filepath,filesize,createtime,canshare)
-        VALUES(#{filename},#{filepath},#{filesize},#{createtime},#{canshare})
+        INSERT INTO file (filename,filepath,filesize,createtime,canshare,owner)
+        VALUES(#{filename},#{filepath},#{filesize},#{createtime},#{canshare},#{owner})
     </insert>
     <!-- 根据文件id更新文件是否共享的标记 -->
     <update id="updateFileById"
-            parameterType="cn.clouddisk.entity.UserFile">
+            parameterType="Map">
         UPDATE FILE
         SET canshare = #{canshare}
         WHERE id = #{id}

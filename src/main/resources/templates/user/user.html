@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>管理CloudDisk</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <link rel="stylesheet" href="/static/css/bootstrap.css"/>
+    <link rel="stylesheet" href="/static/css/fileinput.min.css"/>
+
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript" src="/static/js/fileinput.min.js"></script>
+    <script type="text/javascript" src="/static/js/locales/zh.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+
+    </script>
+</head>
+<body>
+<header th:include="commons::header"></header>
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-xs-2 col-sm-2 col-lg-1" id="myScrollspy">
+            <ul class="nav nav-pills nav-stacked">
+                <li id="user"><a href="/user">用户</a></li>
+                <li id="file"><a href="javascript:void(0)">文件</a></li>
+            </ul>
+        </div>
+        <div class="col-xs-10 col-lg-11 col-sm-10">
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" href="/user/add"><span class="glyphicon glyphicon-plus-sign"></span>新增</a>
+                <a class="btn btn-primary" href="/user/edit"><span class="glyphicon glyphicon-edit"></span>修改</a>
+                <a class="btn btn-danger" href="/user/remove"><span class="glyphicon glyphicon-trash"></span>删除</a>
+            </div>
+            <div class="row clearfix pre-scrollable ">
+                <div class="table-responsive " id="tb">
+                    <table class="table table-hover pre-scrollable">
+                        <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>昵称</th>
+                            <th>电子邮箱</th>
+                            <th>角色</th>
+                            <th>操作</th>
+                        <tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="user:${users}" th:class="${userStat.even?'success':'warning'}">
+                            <td><span th:text="${user.username}">用户名</span></td>
+                            <td><span th:text="${user.nickname}">昵称</span></td>
+                            <td><span th:text="${user.email}">邮箱</span></td>
+                            <td><span th:each="role:${user.roles}" th:text="${role.roleName}">角色名</span></td>
+                            <td>
+                                <button type="button" class="btn btn-default btn-xs"
+                                        th:onclick="|edit(${user.id})|">
+                                    <span class="glyphicon glyphicon-edit"></span>修改
+                                </button>
+                                <button type="button" class="btn btn-danger btn-xs"
+                                        th:onclick="|godelete(${user.id})|">
+                                    <span class="glyphicon glyphicon-trash"></span>删除
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    function godelete(userId) {
+        var r = confirm("确认删除？");
+        if (r === true) {
+            window.location.href = '/user/remove/' + userId;
+        } else {
+            return false;
+        }
+    }
+
+    function edit(userId) {
+        window.location.href = '/user/edit/' + userId;
+    }
+</script>
+    
+</body>
+</html>
+
+
+
+
+
+
+
+

@@ -1,19 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>工艺410共享云盘</title>
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, user-scalable=no">
+          content="width=device-width, initial-scale=1.0, user-scalable=no"/>
 
-    <script type="text/javascript" src="static/js/jquery-3.3.1.min.js"></script>
-    <link rel="stylesheet" href="static/css/bootstrap.css"/>
-    <script type="text/javascript" src="static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" th:src="@{/static/js/jquery-3.3.1.min.js}"></script>
+    <link rel="stylesheet" th:href="@{/static/css/bootstrap.css}"/>
+    <script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}"></script>
 
 </head>
 <body>
-<%@include file="/head.jsp" %>
-
+<!--<header th:include="head"></header>-->
+<header th:include="commons::header"></header>
 <div class="container">
     <div style="padding: 100px 0px 10px;">
         <div class="col-lg-8 col-lg-offset-3">
@@ -25,10 +25,10 @@
                             <h2>输入关键词搜索 !</h2>
                         </div>
                     </div>
-                    <br> <br> <br> <br>
+                    <br/> <br/> <br/> <br/>
                     <div class="col-lg-8 ">
                         <div class="input-group">
-                            <input type="text" class="form-control" name="searchcontent">
+                            <input type="text" class="form-control" name="searchcontent"/>
                             <span class="input-group-btn">
 									<button class="btn btn-primary" type="button"
                                             onclick="document.forms[0].submit()">搜索</button>
